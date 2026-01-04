@@ -41,3 +41,10 @@ __screenshots__/
 # System files
 .DS_Store
 Thumbs.db
+
+# Angular Env Files
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local

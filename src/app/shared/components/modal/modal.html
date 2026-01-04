@@ -1,0 +1,47 @@
+@if (isOpen()) {
+<div class="fixed inset-0 z-50 flex items-center justify-center p-4 animate-in fade-in duration-200">
+    <div class="absolute inset-0 bg-slate-950/90 backdrop-blur-md transition-opacity" (click)="onClose()"></div>
+
+    <div [class]="modalSizeClass()" class="relative bg-gradient-to-br from-slate-800 to-slate-900 rounded-3xl shadow-2xl 
+                    border border-slate-700/50 flex flex-col max-h-[90vh] transform transition-all 
+                    animate-in zoom-in-95 duration-300 backdrop-blur-xl">
+
+        <!-- Decorative Blurs -->
+        <div [class]="iconColorClass() + ' absolute top-0 right-0 w-40 h-40 rounded-full blur-3xl pointer-events-none'">
+        </div>
+        @if (showSecondaryBlur()) {
+        <div class="absolute bottom-0 left-0 w-40 h-40 bg-purple-500/10 rounded-full blur-3xl pointer-events-none">
+        </div>
+        }
+
+        <!-- Header -->
+        <div class="relative z-10 flex-shrink-0 p-8 pb-4">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center gap-3">
+                    <div [class]="iconBgClass() + ' h-10 w-10 rounded-xl flex items-center justify-center shadow-lg'">
+                        <ng-content select="[modal-icon]"></ng-content>
+                    </div>
+                    <h2 class="text-xl font-bold text-white">{{ title() }}</h2>
+                </div>
+                <button (click)="onClose()" type="button"
+                    class="text-slate-400 hover:text-white transition-colors cursor-pointer">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5"
+                        stroke="currentColor" class="w-6 h-6">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+        </div>
+
+        <!-- Content -->
+        <div class="relative z-10 flex-1 overflow-y-auto px-8 py-2 custom-scrollbar">
+            <ng-content select="[modal-content]"></ng-content>
+        </div>
+
+        <!-- Footer -->
+        <div class="relative z-10 flex-shrink-0 p-8 pt-6 border-t border-slate-700/50">
+            <ng-content select="[modal-footer]"></ng-content>
+        </div>
+    </div>
+</div>
+}

@@ -1,0 +1,11 @@
+<div class="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
+    @for (filter of filters(); track filter.value) {
+    <button (click)="onFilterChange(filter.value)" [ngClass]="{ 
+            'bg-teal-500/20 text-teal-400 border-teal-500/20 hover:bg-teal-500/20': activeFilter() === filter.value,
+            'bg-slate-800/50 text-slate-400 border-slate-700/50 hover:text-white hover:border-slate-600': activeFilter() !== filter.value
+        }"
+        class="px-4 py-1.5 rounded-full border text-xs font-bold uppercase tracking-wide whitespace-nowrap transition-colors cursor-pointer">
+        {{ filter.label }}
+    </button>
+    }
+</div>

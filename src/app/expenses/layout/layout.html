@@ -1,0 +1,368 @@
+<!-- expenses/expenses.refactored.html -->
+<div class="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 text-white font-sans 
+            selection:bg-teal-500/30 relative overflow-hidden">
+
+    <!-- Background Effects -->
+    <div class="fixed inset-0 overflow-hidden pointer-events-none">
+        <div class="absolute top-1/4 -left-48 w-96 h-96 bg-teal-500/10 rounded-full blur-3xl animate-pulse"></div>
+        <div class="absolute bottom-1/4 -right-48 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl animate-pulse"
+            style="animation-delay: 1s;"></div>
+    </div>
+
+    <!-- Navigation -->
+    <app-navigation [title]="'Back to Dashboard'" [badge]="selectedGroup()?.name || 'Loading...'"
+        [showBackButton]="true" (backClick)="goBack()">
+    </app-navigation>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 relative">
+
+        <!-- Page Header -->
+        <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-8">
+            <div>
+                <h1 class="text-3xl md:text-4xl font-bold text-white mb-2 tracking-tight">
+                    {{ selectedGroup()?.name }}
+                </h1>
+                <div class="flex items-center gap-4 text-slate-400 text-sm">
+                    <span class="flex items-center gap-1.5">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                            stroke="currentColor" class="w-4 h-4">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z" />
+                        </svg>
+                        {{ members().length }} Members
+                    </span>
+                    <span class="w-1 h-1 bg-slate-600 rounded-full"></span>
+                    <span>Created {{ selectedGroup()?.created_at | date:'MMM yyyy' }}</span>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="flex gap-3">
+                <button class="px-5 py-2.5 rounded-xl border border-slate-700/50 text-slate-300 font-semibold text-sm 
+                       hover:bg-slate-800/50 hover:text-white transition-all active:scale-95 cursor-pointer">
+                    Settle Up
+                </button>
+                <button (click)="showCreateModal.set(true)" class="relative bg-gradient-to-r from-teal-600 to-teal-500 hover:from-teal-500 hover:to-teal-400 
+                       text-white px-6 py-2.5 rounded-xl font-bold text-sm shadow-lg shadow-teal-900/40 
+                       transition-all duration-300 hover:-translate-y-1 active:scale-95 flex items-center gap-2 
+                       group overflow-hidden cursor-pointer">
+                    <div class="absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0 -translate-x-full 
+                      group-hover:translate-x-full transition-transform duration-700"></div>
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5"
+                        stroke="currentColor" class="w-4 h-4 relative z-10">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                    </svg>
+                    <span class="relative z-10">Add Expense</span>
+                </button>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+            <!-- Left Column: Expenses List -->
+            <div class="lg:col-span-2 space-x-6">
+
+                <!-- Filter Tabs -->
+                <app-filter-tabs [filters]="filterOptions" [activeFilter]="activeFilter()"
+                    (filterChange)="filterExpenses($event)">
+                </app-filter-tabs>
+
+                <!-- Expenses List -->
+                <div class="space-x-2">
+                    @if (showExpenses()?.length === 0) {
+                    <app-empty-state title="No expenses yet" description="Go ahead, add the first one!">
+                        <svg empty-icon xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                            stroke-width="1.5" stroke="currentColor" class="w-8 h-8">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M9 14.25l6-6m4.5-3.451a3 3 0 00-4.682-2.72m.94 3.198l.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0112 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 016 18.719m12 0a5.971 5.971 0 00-.941-3.197m0 0A5.995 5.995 0 0012 12.75a5.995 5.995 0 00-5.058 2.772m0 0a3 3 0 00-4.681 2.72 8.986 8.986 0 003.74.477m.94-3.197a5.971 5.971 0 00-.94 3.197M15 6.75a3 3 0 11-6 0 3 3 0 016 0zm6 3a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0zm-13.5 0a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z" />
+                        </svg>
+                    </app-empty-state>
+                    }
+
+                    @for (expense of showExpenses(); track expense.id) {
+                    <app-expense-card [expense]="expense"></app-expense-card>
+                    }
+                </div>
+            </div>
+
+            <!-- Right Column: Summary & Members -->
+            <div class="lg:col-span-1 space-y-6">
+
+                <!-- Total Spending Card -->
+                <div class="bg-gradient-to-br from-teal-500/10 to-cyan-600/10 border border-teal-500/20 rounded-2xl 
+                    p-6 backdrop-blur-md">
+                    <p class="text-teal-400/80 text-xs font-bold uppercase tracking-wider mb-2">Total Group Spending</p>
+                    <h2 class="text-4xl font-bold text-white tracking-tight">{{ totalSpent() | currency:'INR' }}</h2>
+                    <div class="mt-6 pt-4 border-t border-teal-500/10 flex justify-between items-center text-sm">
+                        <span class="text-slate-400">Your total share</span>
+                        <span class="text-white font-semibold tracking-wide">{{ myTotalShare() | currency:'INR'
+                            }}</span>
+                    </div>
+                </div>
+
+                <!-- Members Card -->
+                <div class="bg-slate-800/30 border border-slate-700/50 rounded-2xl p-6 backdrop-blur-sm">
+
+                    <!-- Members Header -->
+                    <div class="flex items-center justify-between mb-5">
+                        <h3 class="text-white font-bold text-sm flex items-center gap-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                                stroke="currentColor" class="w-4 h-4 text-slate-400">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z" />
+                            </svg>
+                            Members
+                        </h3>
+                        <button (click)="openInviteModal()" class="group flex items-center gap-1 px-3 py-1.5 rounded-lg bg-slate-700/50 text-slate-300 
+                           border border-slate-600/50 hover:bg-teal-500 hover:text-white hover:border-teal-400 
+                           transition-all duration-300 text-[10px] font-bold uppercase tracking-wide cursor-pointer 
+                           active:scale-95">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="3"
+                                stroke="currentColor" class="w-3 h-3">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                            </svg>
+                            Invite
+                        </button>
+                    </div>
+
+                    <!-- Members List -->
+                    <div class="space-y-3">
+                        @for (member of memberStats(); track member.id) {
+                        <app-member-list [member]="member"></app-member-list>
+                        }
+                    </div>
+
+                    <!-- Pending Invites -->
+                    @if (pendingInvites().length > 0) {
+                    <div class="mt-5 pt-4 border-t border-slate-700/50">
+                        <h4 class="text-[10px] font-bold uppercase tracking-wider text-slate-500 mb-3">Pending Invites
+                        </h4>
+
+                        <div class="space-y-3">
+                            @for (invite of pendingInvites(); track invite.id) {
+                            <div class="flex items-center gap-3 opacity-75">
+                                <div class="h-8 w-8 rounded-full border border-dashed border-slate-600 flex items-center 
+                                justify-center bg-slate-800/20">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                        stroke-width="2" stroke="currentColor" class="w-3.5 h-3.5 text-slate-500">
+                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                            d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75" />
+                                    </svg>
+                                </div>
+
+                                <div>
+                                    <p class="text-slate-300 font-medium text-sm leading-tight truncate max-w-[120px]">
+                                        {{ invite.inviter_name || 'Unknown' }}
+                                    </p>
+                                    <p class="text-[10px] font-medium text-slate-500 mt-0.5">Pending...</p>
+                                </div>
+                            </div>
+                            }
+                        </div>
+                    </div>
+                    }
+
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Create Expense Modal -->
+    <app-modal [isOpen]="showCreateModal()" title="Add Expense" (close)="showCreateModal.set(false)">
+
+        <svg modal-icon xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+            stroke="currentColor" class="w-5 h-5 text-white">
+            <path stroke-linecap="round" stroke-linejoin="round"
+                d="M12 6v12m-3-2.818l.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+
+        <form modal-content [formGroup]="expenseForm" (ngSubmit)="createExpense()">
+            <div class="space-y-5">
+
+                <!-- Description -->
+                <div>
+                    <label
+                        class="block text-xs font-bold uppercase tracking-wide text-slate-400 mb-2">Description</label>
+                    <input formControlName="description" type="text" placeholder="e.g. Dinner at Mario's" class="w-full bg-slate-900/70 border border-slate-600/50 rounded-xl px-5 py-4 text-white 
+                        placeholder-slate-500 focus:ring-2 focus:ring-teal-500 focus:border-teal-500 outline-none 
+                        transition-all duration-200 backdrop-blur-sm hover:border-slate-500/50"
+                        [class.border-red-500]="hasError('description')" autofocus>
+                </div>
+
+                <!-- Amount & Currency -->
+                <div class="grid grid-cols-3 gap-4">
+                    <div class="col-span-2">
+                        <label
+                            class="block text-xs font-bold uppercase tracking-wide text-slate-400 mb-2">Amount</label>
+                        <input formControlName="amount" type="number" min="1" step="1" placeholder="0.00" class="w-full bg-slate-900/70 border border-slate-600/50 rounded-xl px-5 py-4 text-white 
+                          placeholder-slate-500 focus:ring-2 focus:ring-teal-500 focus:border-teal-500 outline-none 
+                          transition-all duration-200 backdrop-blur-sm hover:border-slate-500/50"
+                            [class.border-red-500]="hasError('amount')">
+                    </div>
+                    <div>
+                        <label
+                            class="block text-xs font-bold uppercase tracking-wide text-slate-400 mb-2">Currency</label>
+                        <select formControlName="currency" class="w-full bg-slate-900/70 border border-slate-600/50 rounded-xl px-3 py-4 text-white 
+                           focus:ring-2 focus:ring-teal-500 focus:border-teal-500 outline-none transition-all 
+                           duration-200 cursor-pointer">
+                            <option value="USD">USD</option>
+                            <option value="EUR">EUR</option>
+                            <option value="INR">INR</option>
+                            <option value="GBP">GBP</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Paid By & Date -->
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold uppercase tracking-wide text-slate-400 mb-2">Paid
+                            By</label>
+                        <select formControlName="paidBy" class="w-full bg-slate-900/70 border border-slate-600/50 rounded-xl px-4 py-4 text-white 
+                           focus:ring-2 focus:ring-teal-500 focus:border-teal-500 outline-none transition-all 
+                           duration-200 cursor-pointer" [class.border-red-500]="hasError('paidBy')">
+                            <option [ngValue]="null" disabled>Select Payer</option>
+                            @for(member of members(); track member.id) {
+                            <option [value]="member.id">{{ member.name }}</option>
+                            }
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold uppercase tracking-wide text-slate-400 mb-2">Date</label>
+                        <input formControlName="date" type="date" class="w-full bg-slate-900/70 border border-slate-600/50 rounded-xl px-4 py-4 text-white 
+                          focus:ring-2 focus:ring-teal-500 focus:border-teal-500 outline-none transition-all 
+                          duration-200 [color-scheme:dark] cursor-pointer">
+                    </div>
+                </div>
+
+                <!-- Category -->
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wide text-slate-400 mb-2">Category</label>
+                    <select formControlName="category" class="w-full bg-slate-900/70 border border-slate-600/50 rounded-xl px-4 py-4 text-white 
+                         focus:ring-2 focus:ring-teal-500 focus:border-teal-500 outline-none transition-all 
+                         duration-200 cursor-pointer" [class.border-red-500]="hasError('category')">
+                        <option value="" disabled selected>Select a category</option>
+                        <option value="Food">🍔 Food & Drink</option>
+                        <option value="Transport">🚕 Transportation</option>
+                        <option value="Housing">🏠 Housing</option>
+                        <option value="Entertainment">🎬 Entertainment</option>
+                        <option value="Utilities">💡 Utilities</option>
+                        <option value="Other">📝 Other</option>
+                    </select>
+                </div>
+
+                <!-- Error Message -->
+                @if (expenseForm.invalid && (expenseForm.dirty || expenseForm.touched)) {
+                <div class="bg-rose-500/10 border border-rose-500/20 rounded-xl p-3 flex gap-3 items-start">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                        stroke="currentColor" class="w-5 h-5 text-rose-400 mt-0.5">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
+                    </svg>
+                    <p class="text-sm text-rose-400 leading-relaxed">Please fill in all required fields correctly.</p>
+                </div>
+                }
+                <div class="h-2"></div>
+            </div>
+        </form>
+
+        <div modal-footer class="flex justify-end gap-3">
+            <button (click)="showCreateModal.set(false)" type="button"
+                class="px-5 py-2.5 text-slate-400 hover:text-white font-semibold transition-colors cursor-pointer">
+                Cancel
+            </button>
+            <button (click)="createExpense()" [disabled]="expenseForm.invalid || isCreating()" class="px-8 py-2.5 bg-teal-600 hover:bg-teal-500 text-white rounded-xl font-bold shadow-lg 
+                     shadow-teal-900/20 transition-all active:scale-95 disabled:opacity-50 
+                     disabled:cursor-not-allowed cursor-pointer">
+                {{ isCreating() ? 'Saving...' : 'Add Expense' }}
+            </button>
+        </div>
+    </app-modal>
+
+    <!-- Invite Member Modal -->
+    <app-modal [isOpen]="showInviteModal()" title="Invite Member" iconColor="purple" size="md"
+        (close)="showInviteModal.set(false)">
+
+        <svg modal-icon xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+            stroke="currentColor" class="w-5 h-5 text-white">
+            <path stroke-linecap="round" stroke-linejoin="round"
+                d="M19 7.5v3m0 0v3m0-3h3m-3 0h-3m-2.25-4.125a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zM4 19.235v-.11a6.375 6.375 0 0112.75 0v.109A12.318 12.318 0 0110.374 21c-2.331 0-4.512-.645-6.374-1.766z" />
+        </svg>
+
+        <form modal-content [formGroup]="inviteForm" (ngSubmit)="inviteMember()">
+            <div class="space-y-6">
+
+                <!-- Error Message -->
+                @if (inviteError()) {
+                <div class="bg-rose-500/10 border border-rose-500/20 rounded-xl p-3 flex gap-3 items-start 
+                      animate-in fade-in slide-in-from-top-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                        stroke="currentColor" class="w-5 h-5 text-rose-400 flex-shrink-0">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
+                    </svg>
+                    <p class="text-xs text-rose-400 leading-relaxed font-medium">{{ inviteError() }}</p>
+                </div>
+                }
+
+                <!-- Email Input -->
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wide text-slate-400 mb-2">Member
+                        Email</label>
+                    <input formControlName="email" type="email" placeholder="friend@example.com" class="w-full bg-slate-900/70 border border-slate-600/50 rounded-xl px-5 py-4 text-white 
+                        placeholder-slate-500 focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none 
+                        transition-all duration-200 backdrop-blur-sm hover:border-slate-500/50"
+                        [class.border-red-500]="inviteForm.get('email')?.invalid && inviteForm.get('email')?.touched"
+                        autofocus>
+                    @if (inviteForm.get('email')?.invalid && inviteForm.get('email')?.touched) {
+                    <p class="text-xs text-rose-400 mt-2 ml-1">Please enter a valid email address.</p>
+                    }
+                </div>
+
+                <!-- Share Link Section -->
+                <div
+                    class="bg-gradient-to-r from-purple-500/10 to-pink-500/10 border border-purple-500/20 rounded-xl p-5">
+                    <div class="flex items-start gap-3 mb-4">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                            stroke="currentColor" class="w-5 h-5 text-purple-400 flex-shrink-0 mt-0.5">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M13.19 8.688a4.5 4.5 0 011.242 7.244l-4.5 4.5a4.5 4.5 0 01-6.364-6.364l1.757-1.757m13.35-.622l1.757-1.757a4.5 4.5 0 00-6.364-6.364l-4.5 4.5a4.5 4.5 0 001.242 7.244" />
+                        </svg>
+                        <div class="flex-1">
+                            <p class="text-sm font-semibold text-purple-400 mb-1">Or Share Link</p>
+                            <p class="text-xs text-slate-400 leading-relaxed mb-3">
+                                Copy and send this link to invite members to your group
+                            </p>
+                            <div class="flex gap-2">
+                                <input type="text" readonly value="https://splitwise.pro/invite/abc123xyz" class="flex-1 bg-slate-900/70 border border-slate-600/50 rounded-lg px-3 py-2 text-sm 
+                              text-slate-300 outline-none">
+                                <button type="button" class="px-4 py-2 bg-purple-500/20 hover:bg-purple-500 text-purple-400 hover:text-white 
+                               rounded-lg font-semibold text-sm transition-all border border-purple-500/30 
+                               hover:border-purple-500 active:scale-95 cursor-pointer">
+                                    Copy
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+
+        <div modal-footer class="flex justify-end gap-3">
+            <button (click)="showInviteModal.set(false)" type="button"
+                class="px-5 py-2.5 text-slate-400 hover:text-white font-semibold transition-colors cursor-pointer">
+                Cancel
+            </button>
+            <button (click)="inviteMember()" [disabled]="inviteForm.invalid || isInviting()" class="relative px-8 py-2.5 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 
+                     hover:to-pink-500 text-white rounded-xl font-bold shadow-xl shadow-purple-900/30 transition-all 
+                     active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer">
+                @if (isInviting()) {
+                <span>Sending...</span>
+                } @else {
+                <span>Send Invite</span>
+                }
+            </button>
+        </div>
+    </app-modal>
+
+</div>

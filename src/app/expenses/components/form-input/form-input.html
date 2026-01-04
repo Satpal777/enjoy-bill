@@ -1,0 +1,32 @@
+<div>
+    <label class="block text-xs font-bold uppercase tracking-wide text-slate-400 mb-2">
+        {{ label() }}
+        @if (optional()) {
+        <span class="text-[10px] text-slate-500 font-normal ml-1 normal-case">(Optional)</span>
+        }
+    </label>
+
+    @if (type() === 'textarea') {
+    <textarea [value]="value" (input)="onInput($event)" (blur)="onTouched()" [placeholder]="placeholder()"
+        [rows]="rows()" [class]="inputClass()" class="w-full bg-slate-900/70 border border-slate-600/50 rounded-xl px-5 py-4 text-white 
+                 placeholder-slate-500 focus:ring-2 focus:ring-teal-500 focus:border-teal-500 outline-none 
+                 transition-all duration-200 backdrop-blur-sm hover:border-slate-500/50 resize-none">
+        </textarea>
+    } @else if (type() === 'select') {
+    <select [value]="value" (change)="onInput($event)" (blur)="onTouched()" [class]="inputClass()" class="w-full bg-slate-900/70 border border-slate-600/50 rounded-xl px-4 py-4 text-white 
+                 focus:ring-2 focus:ring-teal-500 focus:border-teal-500 outline-none transition-all 
+                 duration-200 cursor-pointer">
+        <ng-content></ng-content>
+    </select>
+    } @else {
+    <input [type]="type()" [value]="value" (input)="onInput($event)" (blur)="onTouched()" [placeholder]="placeholder()"
+        [min]="min()" [step]="step()" [class]="inputClass()" class="w-full bg-slate-900/70 border border-slate-600/50 rounded-xl px-5 py-4 text-white 
+                 placeholder-slate-500 focus:ring-2 focus:ring-teal-500 focus:border-teal-500 outline-none 
+                 transition-all duration-200 backdrop-blur-sm hover:border-slate-500/50"
+        [class.border-red-500]="hasError()">
+    }
+
+    @if (errorMessage() && hasError()) {
+    <p class="text-xs text-rose-400 mt-2 ml-1">{{ errorMessage() }}</p>
+    }
+</div>

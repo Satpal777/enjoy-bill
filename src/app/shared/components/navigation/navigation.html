@@ -1,0 +1,78 @@
+<nav class="border-b border-slate-800/50 bg-slate-900/30 backdrop-blur-xl sticky top-0 z-40 relative">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+        <div class="flex items-center justify-between">
+
+            <!-- Left Side: Logo/Back Button -->
+            <div class="flex items-center gap-3" [class.cursor-pointer]="showBackButton()"
+                [class.group]="showBackButton()" (click)="onBackClick()">
+                <div class="h-10 w-10 bg-gradient-to-br from-teal-400 via-teal-500 to-cyan-600 rounded-xl 
+                        flex items-center justify-center shadow-lg shadow-teal-500/30 relative overflow-hidden">
+                    @if (showBackButton()) {
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                        stroke="currentColor"
+                        class="w-5 h-5 text-white relative z-10 group-hover:-translate-x-1 transition-transform">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
+                    </svg>
+                    } @else {
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                        stroke="currentColor" class="w-6 h-6 text-white relative z-10">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M21 12a2.25 2.25 0 00-2.25-2.25H15a3 3 0 11-6 0H5.25A2.25 2.25 0 003 12m18 0v6a2.25 2.25 0 01-2.25 2.25H5.25A2.25 2.25 0 013 18v-6m18 0V9M3 12V9m18 0a2.25 2.25 0 00-2.25-2.25H5.25A2.25 2.25 0 003 9m18 0V6a2.25 2.25 0 00-2.25-2.25H5.25A2.25 2.25 0 003 6v3" />
+                    </svg>
+                    }
+                </div>
+                <div>
+                    <h1 class="text-lg font-bold text-slate-200" [class.group-hover:text-white]="showBackButton()"
+                        [class.transition-colors]="showBackButton()">
+                        {{ title() }}
+                    </h1>
+                    @if (subtitle()) {
+                    <p class="text-[10px] text-slate-500 font-medium uppercase tracking-wider">{{ subtitle() }}</p>
+                    }
+                </div>
+            </div>
+
+
+            <!-- Right Side: Actions -->
+            <div class="flex items-center gap-4">
+
+                <!-- Badge -->
+                @if (badge()) {
+                <div
+                    class="hidden md:flex items-center gap-3 px-4 py-1.5 bg-slate-800/40 rounded-full border border-slate-700/50">
+                    <span class="font-bold text-teal-400 text-sm">{{ badge() }}</span>
+                </div>
+                }
+
+                <!-- Notification Bell -->
+                <div class="relative">
+                    <button (click)="toggleNotifications.emit()"
+                        class="p-2 rounded-full hover:bg-slate-800/50 text-slate-400 hover:text-white transition-colors relative">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                            stroke="currentColor" class="w-6 h-6">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0" />
+                        </svg>
+                        @if (notificationCount() > 0) {
+                        <span
+                            class="absolute top-1.5 right-1.5 h-2.5 w-2.5 bg-rose-500 rounded-full border-2 border-slate-950"></span>
+                        }
+                    </button>
+                    <!-- Project content for specific dropdowns if user wants to slot them here? -->
+                    <!-- Usually notifications dropdown would go here, but the layout structure has them as siblings -->
+                </div>
+
+                <!-- Profile -->
+                <div class="relative">
+                    <button (click)="toggleProfile.emit()"
+                        class="p-2 rounded-full hover:bg-slate-800/50 text-slate-400 hover:text-white transition-colors relative">
+                        <img class="h-8 w-8 p-1 cursor-pointer bg-teal-400 rounded-full" src="avatar.svg" alt="Avatar">
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Render projected content (e.g. dropdowns) -->
+        <ng-content></ng-content>
+    </div>
+</nav>

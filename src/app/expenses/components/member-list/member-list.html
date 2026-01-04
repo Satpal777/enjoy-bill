@@ -1,0 +1,32 @@
+<div class="flex items-center justify-between group py-1.5 cursor-default">
+    <div class="flex items-center gap-3">
+        <div class="h-8 w-8 bg-gradient-to-br from-slate-700 to-slate-800 rounded-full border 
+                    border-slate-600 flex items-center justify-center text-slate-300 font-bold text-xs shadow-sm">
+            {{ member().initials }}
+        </div>
+
+        <div>
+            <p class="text-slate-200 font-medium text-sm leading-tight">{{ member().name }}</p>
+            @if (member().balanceAmount > 0) {
+            <p class="text-[10px] font-bold text-emerald-400 mt-0.5">
+                owes you {{ member().balanceAmount | currency:'INR' }}
+            </p>
+            } @else if (member().balanceAmount < 0) { <p class="text-[10px] font-bold text-rose-400 mt-0.5">
+                you owe {{ -member().balanceAmount | currency:'INR' }}
+                </p>
+                } @else {
+                <p class="text-[10px] font-medium text-slate-500 mt-0.5">Settled up</p>
+                }
+        </div>
+    </div>
+
+    @if (member().balanceAmount !== 0) {
+    <div class="flex flex-col items-end gap-1">
+        <div class="w-12 h-1 rounded-full bg-slate-700/50 overflow-hidden">
+            <div class="h-full rounded-full transition-all duration-500"
+                [class.bg-emerald-500]="member().balanceAmount > 0" [class.bg-rose-500]="member().balanceAmount < 0"
+                style="width: 75%"></div>
+        </div>
+    </div>
+    }
+</div>
