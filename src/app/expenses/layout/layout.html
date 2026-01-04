@@ -69,7 +69,7 @@
 
                 <!-- Expenses List -->
                 <div class="space-x-2">
-                    @if (showExpenses()?.length === 0) {
+                    @if (showExpenses().length === 0) {
                     <app-empty-state title="No expenses yet" description="Go ahead, add the first one!">
                         <svg empty-icon xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                             stroke-width="1.5" stroke="currentColor" class="w-8 h-8">

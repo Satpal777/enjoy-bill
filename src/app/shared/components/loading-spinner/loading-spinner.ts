@@ -4,6 +4,7 @@ import { Component, input } from '@angular/core';
   selector: 'app-loading-spinner',
   imports: [],
   templateUrl: './loading-spinner.html',
+  standalone:true,
   styleUrl: './loading-spinner.css',
 })
 export class LoadingSpinner {
