@@ -11,6 +11,7 @@ export class Supabase {
   public currentUser$: Observable<User | null> = this.currentUser.asObservable();
 
   constructor() {
+    // @ts-ignore
     this.supabase = createClient(process.env.supabaseUrl, process.env.supabasekey);
 
     // Listen to auth state changes
