@@ -42,7 +42,7 @@
                        hover:bg-slate-800/50 hover:text-white transition-all active:scale-95 cursor-pointer">
                     Settle Up
                 </button>
-                <button (click)="showCreateModal.set(true)" class="relative bg-gradient-to-r from-teal-600 to-teal-500 hover:from-teal-500 hover:to-teal-400 
+                <button (click)="openExpenseModal()" class="relative bg-gradient-to-r from-teal-600 to-teal-500 hover:from-teal-500 hover:to-teal-400 
                        text-white px-6 py-2.5 rounded-xl font-bold text-sm shadow-lg shadow-teal-900/40 
                        transition-all duration-300 hover:-translate-y-1 active:scale-95 flex items-center gap-2 
                        group overflow-hidden cursor-pointer">
@@ -80,7 +80,9 @@
                     }
 
                     @for (expense of showExpenses(); track expense.id) {
-                    <app-expense-card [expense]="expense"></app-expense-card>
+                    <app-expense-card [expense]="expense" (click)="openExpenseDetail(expense.id)"
+                        (edit)="editExpenseDetail($event)" (delete)="deleteExpenseDetail($event)"
+                        class="cursor-pointer"></app-expense-card>
                     }
                 </div>
             </div>
@@ -218,7 +220,8 @@
     </main>
 
     <!-- Create Expense Modal -->
-    <app-modal [isOpen]="showCreateModal()" title="Add Expense" (close)="showCreateModal.set(false)">
+    <app-modal [isOpen]="showCreateModal()" [loading]="isEdit ?loadingExpenseData():false"
+        [title]="isEdit ? 'Edit Expense' : 'Add Expense'" (close)="showCreateModal.set(false)">
 
         <svg modal-icon xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
             stroke="currentColor" class="w-5 h-5 text-white">
@@ -324,7 +327,7 @@
             <button (click)="createExpense()" [disabled]="expenseForm.invalid || isCreating()" class="px-8 py-2.5 bg-teal-600 hover:bg-teal-500 text-white rounded-xl font-bold shadow-lg 
                      shadow-teal-900/20 transition-all active:scale-95 disabled:opacity-50 
                      disabled:cursor-not-allowed cursor-pointer">
-                {{ isCreating() ? 'Saving...' : 'Add Expense' }}
+                {{ isCreating() ? 'Saving...' : (isEdit ? 'Edit Expensne' : 'Add Expense' )}}
             </button>
         </div>
     </app-modal>
@@ -414,5 +417,12 @@
             </button>
         </div>
     </app-modal>
+
+    @if (showExpenseDetailModal()) {
+    <app-expense-details [expenseId]="selectedExpenseId()" (close)="closeExpenseDetailModal()">
+    </app-expense-details>
+    }
+
+
 
 </div>

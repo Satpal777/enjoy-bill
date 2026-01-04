@@ -171,3 +171,35 @@ export interface PaginatedResponse<T> {
     total: number;
     hasMore: boolean;
 }
+
+
+export interface Profile {
+  id: string;
+  display_name: string | null;
+  avatar_url: string | null;
+}
+
+export interface ExpenseSplit {
+  amount_owed: number;
+  user: Profile; 
+}
+
+export interface ExpenseGroup {
+  id: string;
+  name: string;
+}
+
+export interface ExpenseDetail {
+  id: string;
+  description: string;
+  total_amount: number;
+  currency: string;
+  category: string;
+  expense_date: string;
+  created_at: string;
+  updated_at:string;
+  
+  group?: ExpenseGroup;          
+  paid_by_user?: Profile;       
+  splits?: ExpenseSplit[];    
+}

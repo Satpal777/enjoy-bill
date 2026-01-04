@@ -13,6 +13,9 @@ import { ExpenseCard, ExpenseCardData } from '../components/expense-card/expense
 import { MemberList } from '../components/member-list/member-list';
 import { Invitation, PendingInvitations } from '../../shared/components/models/modet.types';
 import { ToolTipCard } from '../../shared/directive/tool-tip-card';
+import { Expenses } from '../../core/services/supabase/expenses';
+import { FormInput } from "../components/form-input/form-input";
+import { ExpenseDetails } from '../components/expense-details/expense-details';
 
 interface Member {
   id: string;
@@ -49,6 +52,7 @@ interface ExpenseDbPayload {
     ExpenseCard,
     MemberList,
     Modal,
+    ExpenseDetails,
     CurrencyPipe,
     DatePipe,
     ToolTipCard
@@ -62,6 +66,7 @@ export class ExpenseLayout implements OnInit, OnDestroy {
   private fb = inject(FormBuilder);
   private groupsService = inject(Groups);
   private supabaseService = inject(Supabase);
+  private expensesService = inject(Expenses);
 
   // UI State
   loading = signal<boolean>(true);
@@ -69,8 +74,12 @@ export class ExpenseLayout implements OnInit, OnDestroy {
   isInviting = signal<boolean>(false);
   showCreateModal = signal<boolean>(false);
   showInviteModal = signal<boolean>(false);
+  showExpenseDetailModal = signal<boolean>(false);
+  loadingExpenseData = signal<boolean>(false);
+
 
   // Data
+  selectedExpenseId = signal<string | null>(null);
   selectedGroup = signal<Group | null>(null);
   expenses = signal<ExpenseCardData[]>([]);
   members = signal<Member[]>([]);
@@ -137,6 +146,7 @@ export class ExpenseLayout implements OnInit, OnDestroy {
       currency: ['INR', Validators.required],
       paidBy: [null, Validators.required],
       date: [new Date().toISOString().split('T')[0], Validators.required],
+      isEdit: false,
       category: ['', Validators.required]
     });
 
@@ -146,13 +156,17 @@ export class ExpenseLayout implements OnInit, OnDestroy {
     });
   }
 
+  get isEdit() {
+    return this.expenseForm.get('isEdit')?.value;
+  }
+
   ngOnInit() {
     const groupId = this.route.snapshot.paramMap.get('id');
     if (groupId) {
       this.loadData(groupId);
       const { unsubscribe, subscribe } = this.groupsService.subscribeToGroupChanges(groupId);
       this.updateChannelSubscription = unsubscribe;
-      subscribe().subscribe(() => { this.loadData(groupId); });
+      subscribe().subscribe((val) => { val && this.loadData(groupId); });
     }
   }
 
@@ -161,6 +175,7 @@ export class ExpenseLayout implements OnInit, OnDestroy {
   }
 
   loadData(groupId: string) {
+    console.log("loading...")
     this.loadGroupData(groupId);
     this.loadBalances(groupId);
   }
@@ -211,7 +226,7 @@ export class ExpenseLayout implements OnInit, OnDestroy {
         };
       }));
 
-      
+
       // Map invites to Member-like structure for the UI or use any[]
       this.pendingInvites.set((invites || []).map((i: any) => ({
         ...i,
@@ -246,8 +261,13 @@ export class ExpenseLayout implements OnInit, OnDestroy {
         expense_date: formValues.date,
       };
 
-      await this.groupsService.createExpense(dbPayload);
-      this.loadGroupData(groupId);
+      const id = this.selectedExpenseId()
+      if (formValues.isEdit && id) {
+        await this.expensesService.updateExpense(id, dbPayload);
+        this.selectedExpenseId.set(null);
+      } else {
+        await this.expensesService.createExpense(dbPayload);
+      }
     }
 
     this.isCreating.set(false);
@@ -294,6 +314,11 @@ export class ExpenseLayout implements OnInit, OnDestroy {
     this.showInviteModal.set(true);
   }
 
+  openExpenseModal() {
+    this.resetForm();
+    this.showCreateModal.set(true);
+  }
+
   goBack() {
     this.router.navigate(['/dashboard']);
   }
@@ -306,7 +331,8 @@ export class ExpenseLayout implements OnInit, OnDestroy {
       currency: 'INR',
       date: new Date().toISOString().split('T')[0],
       category: '',
-      paidBy: currentUserId || null // Default to current user
+      paidBy: currentUserId || null,
+      isEdit: false
     });
   }
 
@@ -317,5 +343,50 @@ export class ExpenseLayout implements OnInit, OnDestroy {
 
   filterExpenses = (filter: string) => {
     this.activeFilter.set(filter);
+  }
+
+  openExpenseDetail(id: string) {
+    this.showExpenseDetailModal.set(true);
+    this.selectedExpenseId.set(id);
+  }
+
+  closeExpenseDetailModal() {
+    this.showExpenseDetailModal.set(false);
+    this.selectedExpenseId.set(null);
+  }
+
+  refreshExpenses() {
+    this.showExpenseDetailModal.set(false);
+    this.selectedExpenseId.set(null);
+    const groupId = this.selectedGroup()?.id;
+    if (groupId) {
+      this.loadData(groupId);
+    }
+  }
+
+  async editExpenseDetail(expenseId: string) {
+    this.expenseForm.patchValue({ isEdit: true });
+    this.selectedExpenseId.set(expenseId);
+    this.showCreateModal.set(true);
+    this.loadingExpenseData.set(true);
+    const expenses = await this.expensesService.getExpenseDetails(expenseId);
+    this.expenseForm.patchValue({
+      description: expenses.description,
+      amount: expenses.total_amount,
+      currency: expenses.currency,
+      paidBy: expenses.paid_by_user?.id,
+      date: new Date(expenses.created_at).toISOString().split('T')[0],
+      category: expenses.category
+    });
+    console.log(this.expenseForm.value)
+    this.loadingExpenseData.set(false);
+  }
+
+  async deleteExpenseDetail(expenseId: string) {
+    const reply = confirm("Are you sure you want to delete expense");
+    if (reply) {
+      await this.expensesService.deleteExpense(expenseId);
+      this.expenses.update((pre) => pre.filter((el) => el.id !== expenseId));
+    }
   }
 }
