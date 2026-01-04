@@ -58,8 +58,7 @@
                             class="absolute top-1.5 right-1.5 h-2.5 w-2.5 bg-rose-500 rounded-full border-2 border-slate-950"></span>
                         }
                     </button>
-                    <!-- Project content for specific dropdowns if user wants to slot them here? -->
-                    <!-- Usually notifications dropdown would go here, but the layout structure has them as siblings -->
+                    <ng-content select="app-notification-dropdown"></ng-content>
                 </div>
 
                 <!-- Profile -->
@@ -68,11 +67,12 @@
                         class="p-2 rounded-full hover:bg-slate-800/50 text-slate-400 hover:text-white transition-colors relative">
                         <img class="h-8 w-8 p-1 cursor-pointer bg-teal-400 rounded-full" src="avatar.svg" alt="Avatar">
                     </button>
+                    <ng-content select="app-profile-dropdown"></ng-content>
                 </div>
             </div>
         </div>
 
         <!-- Render projected content (e.g. dropdowns) -->
-        <ng-content></ng-content>
+        
     </div>
 </nav>
