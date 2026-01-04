@@ -11,10 +11,11 @@ import { EmptyState } from "../../shared/components/empty-state/empty-state";
 import { Modal } from "../../shared/components/modal/modal";
 import { FormsModule } from '@angular/forms';
 import { Invitation } from '../../shared/components/models/modet.types';
+import { ProfileDropdown } from '../../shared/components/profile-dropdown/profile-dropdown';
 
 @Component({
   selector: 'app-dashboard-layout',
-  imports: [FormsModule, Navigation, NotificationDropdown, StatsCard, DatePipe, EmptyState, Modal, CurrencyPipe],
+  imports: [FormsModule, Navigation, NotificationDropdown, ProfileDropdown, StatsCard, DatePipe, EmptyState, Modal, CurrencyPipe],
   standalone: true,
   templateUrl: './layout.html',
   styleUrl: './layout.css',

@@ -9,9 +9,7 @@ import { Invitation } from '../models/modet.types';
   styleUrl: './notification-dropdown.css',
 })
 export class NotificationDropdown {
-  isOpen = input(false);
   invitations = input<Invitation[]>([]);
-
   close = output<void>();
   respond = output<{ id: string, accept: boolean }>();
 }
