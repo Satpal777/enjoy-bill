@@ -48,3 +48,13 @@ Thumbs.db
 .env.development.local
 .env.test.local
 .env.production.local
+environments/*
+environment.ts
+environment.development.ts
+environment.production.ts
+
+# package
+package-lock.json
+.agent/*
+settings.json
+
