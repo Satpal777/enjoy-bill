@@ -29,6 +29,5 @@ export class ExpenseDetails implements OnInit {
   async getExpenseDetails(expenseId:string) {
     const response = await this.expensesService.getExpenseDetails(expenseId);
     this.expenseData.set(response);
-    console.log(this.expenseData())
   }
 }

@@ -175,7 +175,6 @@ export class ExpenseLayout implements OnInit, OnDestroy {
   }
 
   loadData(groupId: string) {
-    console.log("loading...")
     this.loadGroupData(groupId);
     this.loadBalances(groupId);
   }
@@ -378,7 +377,6 @@ export class ExpenseLayout implements OnInit, OnDestroy {
       date: new Date(expenses.created_at).toISOString().split('T')[0],
       category: expenses.category
     });
-    console.log(this.expenseForm.value)
     this.loadingExpenseData.set(false);
   }
 

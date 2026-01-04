@@ -42,8 +42,6 @@ export class ToolTipCard {
   }
 
   private showTooltip() {
-
-    console.log(this.tooltipContext )
     // 1. Create the view
     this.viewRef = this.viewContainerRef.createEmbeddedView(
       this.tooltipTemplate!,
