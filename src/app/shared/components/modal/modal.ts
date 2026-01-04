@@ -12,6 +12,7 @@ export class Modal {
   size = input<'sm' | 'md' | 'lg'>('md');
   iconColor = input<'teal' | 'purple' | 'blue'>('teal');
   showSecondaryBlur = input(true);
+  loading = input(false);
 
   close = output<void>();
 

@@ -95,6 +95,14 @@ export interface Invitation {
     inviter_name: string;
 }
 
+export interface PendingInvitations extends Invitation {
+    invitee_email: string;
+    inviter: {
+        display_name: string
+    }
+    status: string
+}
+
 export interface InvitationResponse {
     id: string;
     accept: boolean;
@@ -162,4 +170,36 @@ export interface PaginatedResponse<T> {
     pageSize: number;
     total: number;
     hasMore: boolean;
+}
+
+
+export interface Profile {
+  id: string;
+  display_name: string | null;
+  avatar_url: string | null;
+}
+
+export interface ExpenseSplit {
+  amount_owed: number;
+  user: Profile; 
+}
+
+export interface ExpenseGroup {
+  id: string;
+  name: string;
+}
+
+export interface ExpenseDetail {
+  id: string;
+  description: string;
+  total_amount: number;
+  currency: string;
+  category: string;
+  expense_date: string;
+  created_at: string;
+  updated_at:string;
+  
+  group?: ExpenseGroup;          
+  paid_by_user?: Profile;       
+  splits?: ExpenseSplit[];    
 }

@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { Supabase } from '../supabase';
 import { SupabaseClient } from '@supabase/supabase-js';
 import { BehaviorSubject } from 'rxjs';
-import { Balance, ExpenseDbPayload } from '../../../shared/components/models/modet.types';
+import { Balance } from '../../../shared/components/models/modet.types';
 
 export interface Group {
   id: string;
@@ -180,25 +180,6 @@ export class Groups {
     return data as Balance[];
   }
 
-  async createExpense(dbPayload: ExpenseDbPayload) {
-    const user = await this.client.auth.getUser();
-    const userId = user.data.user?.id;
-
-    if (!userId) throw new Error('Not authenticated');
-
-
-    const { data: groupData, error: groupError } = await this.client
-      .from('expenses')
-      .insert(dbPayload)
-      .select()
-      .single();
-
-    if (groupError) throw groupError;
-
-    return groupData;
-  }
-
-
   async inviteMember(groupId: string, email: string) {
     const { data: { user } } = await this.client.auth.getUser();
 
@@ -248,7 +229,6 @@ export class Groups {
       console.error('Error fetching invites:', error);
       return [];
     }
-
     return (data || []).map((invite: any) => ({
       id: invite.id,
       created_at: invite.created_at,
@@ -309,13 +289,12 @@ export class Groups {
       .on(
         'postgres_changes',
         {
-          event: 'INSERT',
+          event: '*',
           schema: 'public',
           table: 'expenses',
           filter: `group_id=eq.${groupId}`,
         },
         (payload) => {
-          console.log('Change received!', payload);
           updateChannel.next(payload);
         }
       )

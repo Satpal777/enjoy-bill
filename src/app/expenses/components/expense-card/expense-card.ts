@@ -1,4 +1,4 @@
-import { Component, input } from '@angular/core';
+import { Component, input, output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 export interface ExpenseCardData {
@@ -21,4 +21,16 @@ export interface ExpenseCardData {
 })
 export class ExpenseCard {
   expense = input.required<ExpenseCardData>();
+  edit = output<string>();
+  delete = output<string>();
+
+  onEdit(evt: Event) {
+    evt.stopPropagation();
+    this.edit.emit(this.expense().id);
+  }
+
+  onDelete(evt: Event) {
+    evt.stopPropagation()
+    this.delete.emit(this.expense().id);
+  }
 }

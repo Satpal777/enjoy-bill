@@ -14,6 +14,8 @@
         </div>
         }
 
+        @if(!loading()){
+
         <!-- Header -->
         <div class="relative z-10 flex-shrink-0 p-8 pb-4">
             <div class="flex justify-between items-center">
@@ -32,16 +34,25 @@
                 </button>
             </div>
         </div>
-
         <!-- Content -->
         <div class="relative z-10 flex-1 overflow-y-auto px-8 py-2 custom-scrollbar">
             <ng-content select="[modal-content]"></ng-content>
         </div>
-
         <!-- Footer -->
         <div class="relative z-10 flex-shrink-0 p-8 pt-6 border-t border-slate-700/50">
             <ng-content select="[modal-footer]"></ng-content>
         </div>
+
+        }@else {
+        <div class="p-10 text-center">
+            <div
+                class="animate-spin w-8 h-8 border-2 border-emerald-500 border-t-transparent rounded-full mx-auto mb-2">
+            </div>
+            <p class="text-slate-500 text-sm">Loading expense details...</p>
+        </div>
+        }
+
     </div>
+
 </div>
 }
