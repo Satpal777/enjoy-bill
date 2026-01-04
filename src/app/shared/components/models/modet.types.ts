@@ -95,6 +95,14 @@ export interface Invitation {
     inviter_name: string;
 }
 
+export interface PendingInvitations extends Invitation {
+    invitee_email: string;
+    inviter: {
+        display_name: string
+    }
+    status: string
+}
+
 export interface InvitationResponse {
     id: string;
     accept: boolean;

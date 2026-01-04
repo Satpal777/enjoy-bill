@@ -11,7 +11,8 @@ import { Supabase } from '../../core/services/supabase';
 import { FilterTabs } from '../components/filter-tabs/filter-tabs';
 import { ExpenseCard, ExpenseCardData } from '../components/expense-card/expense-card';
 import { MemberList } from '../components/member-list/member-list';
-import { Invitation } from '../../shared/components/models/modet.types';
+import { Invitation, PendingInvitations } from '../../shared/components/models/modet.types';
+import { ToolTipCard } from '../../shared/directive/tool-tip-card';
 
 interface Member {
   id: string;
@@ -49,7 +50,8 @@ interface ExpenseDbPayload {
     MemberList,
     Modal,
     CurrencyPipe,
-    DatePipe
+    DatePipe,
+    ToolTipCard
   ],
   templateUrl: './layout.html',
   styleUrl: './layout.css',
@@ -73,7 +75,7 @@ export class ExpenseLayout implements OnInit, OnDestroy {
   expenses = signal<ExpenseCardData[]>([]);
   members = signal<Member[]>([]);
   balances = signal<Balance[]>([]);
-  pendingInvites = signal<Invitation[]>([]);
+  pendingInvites = signal<PendingInvitations[]>([]);
 
   // Create a signal from the current user observable
   userId = toSignal(this.supabaseService.currentUser$);
@@ -209,6 +211,7 @@ export class ExpenseLayout implements OnInit, OnDestroy {
         };
       }));
 
+      
       // Map invites to Member-like structure for the UI or use any[]
       this.pendingInvites.set((invites || []).map((i: any) => ({
         ...i,

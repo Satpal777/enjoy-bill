@@ -248,7 +248,6 @@ export class Groups {
       console.error('Error fetching invites:', error);
       return [];
     }
-
     return (data || []).map((invite: any) => ({
       id: invite.id,
       created_at: invite.created_at,
