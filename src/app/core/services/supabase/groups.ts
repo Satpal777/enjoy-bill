@@ -180,7 +180,7 @@ export class Groups {
     return data as Balance[];
   }
 
-  async inviteMember(groupId: string, email: string) {
+  async inviteMember(groupId: string, email: string | null) {
     const { data: { user } } = await this.client.auth.getUser();
 
     if (!user) {
@@ -209,6 +209,7 @@ export class Groups {
 
     return data;
   }
+
   async getPendingInvitations() {
     const { data: { user } } = await this.client.auth.getUser();
     if (!user?.email) return [];
@@ -238,20 +239,6 @@ export class Groups {
     }));
   }
 
-  async respondInvitation(status: string) {
-    const { data: { user } } = await this.client.auth.getUser();
-
-    if (!user) {
-      throw new Error('You must be logged in to invite members.');
-    }
-
-    this.client
-      .from('group_invitations')
-      .update({ status })
-      .eq('invitee_email', user.email)
-  }
-
-
   /**
    * Accept an invitation (Uses the RPC function we created)
    */
@@ -263,6 +250,42 @@ export class Groups {
       console.error('Error accepting invite:', error);
       throw error;
     }
+  }
+
+  async validateInvitation(inviteCode: string) {
+    try {
+      const { data, error } = await this.client
+        .rpc('get_invite_details', { token_input: inviteCode });
+
+      if (error) {
+        throw error;
+      }
+
+      return {
+        groupName: data.group_name,
+        valid: data.valid,
+        inviterName: data.inviter_name,
+        message: data.message
+      };
+    }
+    catch (error) {
+      console.error('Error validating invite:', error);
+      throw error;
+    }
+  }
+
+
+  async acceptOneTimeInvitation(token: string) {
+    const { data, error } = await this.client
+      .rpc('accept_invite_by_token', { p_token: token })
+      .select();
+
+    if (error) {
+      console.error('Error accepting invite:', error);
+      throw error;
+    }
+
+    return data;
   }
 
   /**

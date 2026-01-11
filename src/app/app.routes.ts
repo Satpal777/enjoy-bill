@@ -10,5 +10,10 @@ export const routes: Routes = [
     { path: 'login', component: Login },
     { path: 'signup', component: Signup },
     { path: 'dashboard', component: DashboardLayout, canActivate: [authGuard] },
-    { path: 'expenses/:id', component: ExpenseLayout, canActivate: [authGuard] }
+    { path: 'expenses/:id', component: ExpenseLayout, canActivate: [authGuard] },
+    {
+        path: 'invite/:code',
+        loadComponent: () => import('./invite-handler/invite-handler')
+            .then(m => m.InviteHandler)
+    },
 ];
