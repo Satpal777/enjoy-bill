@@ -93,6 +93,9 @@ export class ExpenseLayout implements OnInit, OnDestroy {
   expenseForm: FormGroup;
   inviteForm: FormGroup;
   inviteError = signal<string | null>(null);
+  inviteSuccess = signal<boolean>(false);
+  invitedEmail = signal<string>('');
+  linkCopied = signal<boolean>(false);
 
   // Filters
   activeFilter = signal<string>('all');
@@ -388,5 +391,39 @@ export class ExpenseLayout implements OnInit, OnDestroy {
       await this.expensesService.deleteExpense(expenseId);
       this.expenses.update((pre) => pre.filter((el) => el.id !== expenseId));
     }
+  }
+
+  async generateAndCopyLink() {
+    const groupId = this.selectedGroup()?.id;
+    if (!groupId) return;
+
+    let { token } = await this.groupsService.inviteMember(groupId, null);
+
+    const uri = `${window.location.origin}/invite/${token}`;
+    
+    navigator.clipboard.writeText(uri).then(() => {
+      this.linkCopied.set(true);
+
+      setTimeout(() => {
+        this.closeInviteModal();
+      }, 2000);
+
+    }).catch(err => {
+      console.error('Failed to copy link:', err);
+      this.inviteError.set('Failed to copy link to clipboard. Please try again.');
+    });
+  }
+
+  closeInviteModal() {
+    this.showInviteModal.set(false);
+
+    // Reset all states after modal close
+    setTimeout(() => {
+      this.inviteForm.reset();
+      this.inviteError.set(null);
+      this.inviteSuccess.set(false);
+      this.invitedEmail.set('');
+      this.linkCopied.set(false);
+    }, 300);
   }
 }

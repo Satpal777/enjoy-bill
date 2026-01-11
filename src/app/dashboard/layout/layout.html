@@ -1,6 +1,5 @@
 <!-- dashboard/dashboard.refactored.html -->
-<div class="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 text-white font-sans 
-            selection:bg-teal-500/30 relative overflow-hidden">
+<div class="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 text-white font-sans selection:bg-teal-500/30 relative overflow-hidden">
 
     <!-- Background Effects -->
     <div class="fixed inset-0 overflow-hidden pointer-events-none">
@@ -15,42 +14,41 @@
         (toggleProfile)="showProfilePopUp.set(!showProfilePopUp())">
 
         @if (showNotifications()) {
-             <!-- Notification Dropdown -->
-             <app-notification-dropdown selec class="absolute right-0 top-full mt-3 w-80 bg-slate-900 border border-slate-700 rounded-xl 
+        <!-- Notification Dropdown -->
+        <app-notification-dropdown selec class="absolute right-0 top-full mt-3 w-80 bg-slate-900 border border-slate-700 rounded-xl 
                 shadow-2xl overflow-hidden z-50 animate-in fade-in slide-in-from-top-2 origin-top-right 
-                ring-1 ring-black/50"  [invitations]="invitations()"
-                 (close)="showNotifications.set(false)" (respond)="handleInviteResponse($event)">
-             </app-notification-dropdown>
-         }
+                ring-1 ring-black/50" [invitations]="invitations()" (close)="showNotifications.set(false)"
+            (respond)="handleInviteResponse($event)">
+        </app-notification-dropdown>
+        }
 
-         @if (showProfilePopUp()) {
-             <!-- Profile Dropdown -->
-             <app-profile-dropdown class="absolute right-0 top-full mt-3 w-30 bg-slate-900 border border-slate-700 rounded-xl 
+        @if (showProfilePopUp()) {
+        <!-- Profile Dropdown -->
+        <app-profile-dropdown class="absolute right-0 top-full mt-3 w-30 bg-slate-900 border border-slate-700 rounded-xl 
                     shadow-2xl overflow-hidden z-50 animate-in fade-in slide-in-from-top-2 origin-top-right 
-                    ring-1 ring-black/50" (close)="showProfilePopUp.set(false)"
-                 (logout)="logout()">
-             </app-profile-dropdown>
-         }
+                    ring-1 ring-black/50" (close)="showProfilePopUp.set(false)" (logout)="logout()">
+        </app-profile-dropdown>
+        }
 
     </app-navigation>
 
-    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 relative">
+    <main class="max-w-7xl mx-auto px-5 sm:px-6 lg:px-8 py-6 sm:py-8 relative">
 
         <!-- Page Header -->
-        <div class="flex flex-col sm:flex-row sm:justify-between sm:items-end gap-6 mb-8">
+        <div class="flex flex-col gap-5 mb-6 sm:flex-row sm:justify-between sm:items-end sm:gap-6 sm:mb-8">
             <div>
-                <h1 class="text-3xl md:text-4xl font-bold text-white tracking-tight mb-2">Dashboard</h1>
-                <p class="text-slate-400 text-base">Overview of your groups and expenses.</p>
+                <h1 class="text-4xl font-bold text-white tracking-tight mb-2">Dashboard</h1>
+                <p class="text-slate-400 text-lg sm:text-base">Overview of your groups and expenses.</p>
             </div>
 
             <button (click)="showCreateModal.set(true)" class="cursor-pointer bg-gradient-to-r from-teal-600 to-teal-500 hover:from-teal-500 
-                     hover:to-teal-400 text-white px-6 py-3 rounded-xl font-bold shadow-lg shadow-teal-900/20 
-                     transition-all duration-300 hover:-translate-y-1 active:scale-95 group overflow-hidden">
+                     hover:to-teal-400 text-white px-8 py-4 sm:px-6 sm:py-3 rounded-xl font-bold text-lg sm:text-base shadow-lg shadow-teal-900/20 
+                     transition-all duration-300 hover:-translate-y-1 active:scale-95 group overflow-hidden w-full sm:w-auto">
                 <div class="absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0 -translate-x-full 
                     group-hover:translate-x-full transition-transform duration-700"></div>
-                <div class="flex items-center gap-2 relative z-10">
+                <div class="flex items-center justify-center gap-2 relative z-10">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5"
-                        stroke="currentColor" class="w-5 h-5">
+                        stroke="currentColor" class="w-6 h-6 sm:w-5 sm:h-5">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
                     </svg>
                     <span>Create Group</span>
@@ -59,10 +57,10 @@
         </div>
 
         <!-- Stats Cards -->
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-8">
+        <div class="grid grid-cols-1 gap-4 mb-6 sm:grid-cols-3 sm:gap-6 sm:mb-8">
             <app-stats-card label="Total Groups" [value]="groups().length.toString()">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
-                    stroke="currentColor" class="w-6 h-6">
+                    stroke="currentColor" class="w-7 h-7 sm:w-6 sm:h-6">
                     <path stroke-linecap="round" stroke-linejoin="round"
                         d="M18 18.72a9.094 9.094 0 003.741-.479 3 3 0 00-4.682-2.72m.94 3.198l.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0112 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 016 18.719m12 0a5.971 5.971 0 00-.941-3.197m0 0A5.995 5.995 0 0012 12.75a5.995 5.995 0 00-5.058 2.772m0 0a3 3 0 00-4.681 2.72 8.986 8.986 0 003.74.477m.94-3.197a5.971 5.971 0 00-.94 3.197M15 6.75a3 3 0 11-6 0 3 3 0 016 0zm6 3a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0zm-13.5 0a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z" />
                 </svg>
@@ -70,7 +68,7 @@
 
             <app-stats-card label="You Owe" [value]="totalYouOwe() | currency:'INR'" variant="danger">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
-                    stroke="currentColor" class="w-6 h-6">
+                    stroke="currentColor" class="w-7 h-7 sm:w-6 sm:h-6">
                     <path stroke-linecap="round" stroke-linejoin="round"
                         d="M12 4.5v15m0 0l6.75-6.75M12 19.5l-6.75-6.75" />
                 </svg>
@@ -78,7 +76,7 @@
 
             <app-stats-card label="Owed to You" [value]="totalOwedToYou() | currency:'INR'" variant="success">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
-                    stroke="currentColor" class="w-6 h-6">
+                    stroke="currentColor" class="w-7 h-7 sm:w-6 sm:h-6">
                     <path stroke-linecap="round" stroke-linejoin="round"
                         d="M12 19.5v-15m0 0l-6.75 6.75M12 4.5l6.75 6.75" />
                 </svg>
@@ -87,9 +85,9 @@
 
         <!-- Loading State -->
         @if (loading()) {
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3">
             @for (i of [1,2,3,4,5,6]; track i) {
-            <div class="h-64 bg-gradient-to-br from-slate-800/50 to-slate-800/30 rounded-2xl border 
+            <div class="h-56 sm:h-64 bg-gradient-to-br from-slate-800/50 to-slate-800/30 rounded-2xl border 
                       border-slate-700/50 animate-pulse"></div>
             }
         </div>
@@ -97,64 +95,66 @@
 
         <!-- Groups Grid -->
         @if (!loading()) {
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3">
             @for (group of groups(); track group.id; let idx = $index) {
             <div (click)="showExpenses(group.id)" class="group relative bg-gradient-to-br from-slate-800/60 to-slate-800/40 border border-slate-700/50 
                       rounded-2xl p-6 transition-all duration-500 hover:border-teal-500/50 hover:shadow-2xl 
                       hover:shadow-teal-900/10 hover:-translate-y-1 cursor-pointer backdrop-blur-sm overflow-hidden 
-                      flex flex-col h-full" [style.animation-delay]="idx * 0.05 + 's'">
+                      flex flex-col" [style.animation-delay]="idx * 0.05 + 's'">
 
                 <div class="absolute inset-0 bg-gradient-to-br from-teal-500/0 via-teal-500/5 to-transparent opacity-0 
                         group-hover:opacity-100 transition-opacity duration-500"></div>
 
                 <div class="relative z-10 flex flex-col h-full">
-                    <div class="flex justify-between items-start mb-6">
-                        <div class="h-12 w-12 bg-gradient-to-br from-teal-500 to-cyan-600 rounded-xl flex items-center 
-                            justify-center text-white font-bold text-xl shadow-lg shadow-teal-900/30 
+                    <!-- Header -->
+                    <div class="flex justify-between items-start mb-5">
+                        <div class="h-16 w-16 sm:h-14 sm:w-14 bg-gradient-to-br from-teal-500 to-cyan-600 rounded-xl flex items-center 
+                            justify-center text-white font-bold text-2xl sm:text-xl shadow-lg shadow-teal-900/30 
                             group-hover:scale-110 group-hover:rotate-3 transition-all duration-300">
                             {{ group.name.charAt(0).toUpperCase() }}
                         </div>
-                        <span class="text-[10px] font-bold text-slate-500 bg-slate-900/60 px-2 py-1 rounded-lg border 
+                        <span class="hidden sm:block text-[10px] font-bold text-slate-500 bg-slate-900/60 px-2 py-1 rounded-lg border 
                              border-slate-700/50 uppercase tracking-wide">
                             {{ group.created_at | date:'MMM yyyy' }}
                         </span>
                     </div>
 
+                    <!-- Content -->
                     <div class="flex-1">
-                        <h3
-                            class="text-lg font-bold text-white mb-2 truncate group-hover:text-teal-400 transition-colors">
+                        <h3 class="text-2xl sm:text-xl font-bold text-white mb-2 group-hover:text-teal-400 transition-colors">
                             {{ group.name }}
                         </h3>
-                        <p class="text-sm text-slate-400 line-clamp-2 h-10 leading-relaxed">
+                        <p class="text-base sm:text-sm text-slate-400 line-clamp-2 leading-relaxed mb-4 sm:mb-0">
                             {{ group.description || 'No description provided.' }}
                         </p>
                     </div>
 
-                    <div class="mt-6 pt-4 border-t border-slate-700/50 flex items-center justify-between text-xs 
-                          font-medium text-slate-500">
-                        <div class="flex items-center gap-4">
-                            <span class="flex items-center gap-1.5">
+                    <!-- Footer Stats -->
+                    <div class="mt-5 pt-5 border-t border-slate-700/50 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between sm:gap-0">
+                        <div class="flex items-center justify-between sm:justify-start gap-6 text-base sm:text-sm font-medium text-slate-400">
+                            <span class="flex items-center gap-2">
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
-                                    stroke="currentColor" class="w-3.5 h-3.5">
+                                    stroke="currentColor" class="w-5 h-5 sm:w-4 sm:h-4">
                                     <path stroke-linecap="round" stroke-linejoin="round"
                                         d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
                                 </svg>
-                                {{ group.member_count || 0 }}
+                                <span>{{ group.member_count || 0 }} Members</span>
                             </span>
-                            <span class="flex items-center gap-1.5">
+                            <span class="flex items-center gap-2">
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
-                                    stroke="currentColor" class="w-3.5 h-3.5">
+                                    stroke="currentColor" class="w-5 h-5 sm:w-4 sm:h-4">
                                     <path stroke-linecap="round" stroke-linejoin="round"
                                         d="M12 6v12m-3-2.818l.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                                 </svg>
-                                0
+                                <span class="sm:hidden">0 Expenses</span>
+                                <span class="hidden sm:inline">0</span>
                             </span>
                         </div>
 
-                        <div class="flex items-center gap-1 group-hover:text-teal-400 transition-colors">
-                            Open
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
-                                stroke="currentColor" class="w-3 h-3">
+                        <div class="flex items-center justify-center gap-2 text-teal-400 font-semibold text-base sm:text-sm group-hover:gap-3 transition-all">
+                            <span>View Details</span>
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5"
+                                stroke="currentColor" class="w-4 h-4">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
                             </svg>
                         </div>
@@ -169,7 +169,7 @@
                 <app-empty-state title="No groups yet" description="Create your first group to start tracking expenses."
                     actionLabel="Create Group" (action)="showCreateModal.set(true)">
                     <svg empty-icon xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                        stroke-width="1.5" stroke="currentColor" class="w-10 h-10">
+                        stroke-width="1.5" stroke="currentColor" class="w-16 h-16 sm:w-12 sm:h-12">
                         <path stroke-linecap="round" stroke-linejoin="round"
                             d="M18 18.72a9.094 9.094 0 003.741-.479 3 3 0 00-4.682-2.72m.94 3.198l.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0112 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 016 18.719m12 0a5.971 5.971 0 00-.941-3.197m0 0A5.995 5.995 0 0012 12.75a5.995 5.995 0 00-5.058 2.772m0 0a3 3 0 00-4.681 2.72 8.986 8.986 0 003.74.477m.94-3.197a5.971 5.971 0 00-.94 3.197M15 6.75a3 3 0 11-6 0 3 3 0 016 0zm6 3a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0zm-13.5 0a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z" />
                     </svg>
@@ -184,44 +184,44 @@
     <app-modal [isOpen]="showCreateModal()" title="New Group" (close)="showCreateModal.set(false)">
 
         <svg modal-icon xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
-            stroke="currentColor" class="w-5 h-5 text-white">
+            stroke="currentColor" class="w-6 h-6 sm:w-5 sm:h-5 text-white">
             <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
         </svg>
 
         <div modal-content class="space-y-6">
             <div>
-                <label class="block text-xs font-bold uppercase tracking-wide text-slate-400 mb-2">Group Name</label>
-                <input [(ngModel)]="newGroupName" type="text" placeholder="e.g. Apartment 404" class="w-full bg-slate-900/70 border border-slate-600/50 rounded-xl px-5 py-4 text-white 
+                <label class="block text-sm sm:text-xs font-bold uppercase tracking-wide text-slate-400 mb-3 sm:mb-2">Group Name</label>
+                <input [(ngModel)]="newGroupName" type="text" placeholder="e.g. Apartment 404" class="w-full bg-slate-900/70 border border-slate-600/50 rounded-xl px-5 py-4 text-white text-lg sm:text-base
                       placeholder-slate-500 focus:ring-2 focus:ring-teal-500 focus:border-teal-500 outline-none 
                       transition-all duration-200 backdrop-blur-sm hover:border-slate-500/50" autofocus>
             </div>
 
             <div>
-                <label class="block text-xs font-bold uppercase tracking-wide text-slate-400 mb-2">
-                    Description <span class="text-[10px] text-slate-500 font-normal ml-1 normal-case">(Optional)</span>
+                <label class="block text-sm sm:text-xs font-bold uppercase tracking-wide text-slate-400 mb-3 sm:mb-2">
+                    Description <span class="text-xs sm:text-[10px] text-slate-500 font-normal ml-1 normal-case">(Optional)</span>
                 </label>
-                <textarea [(ngModel)]="newGroupDesc" rows="3" placeholder="What is this group for?"
-                    class="w-full bg-slate-900/70 border border-slate-600/50 rounded-xl px-5 py-4 text-white 
+                <textarea [(ngModel)]="newGroupDesc" rows="4" placeholder="What is this group for?"
+                    class="w-full bg-slate-900/70 border border-slate-600/50 rounded-xl px-5 py-4 text-white text-lg sm:text-base
                          placeholder-slate-500 focus:ring-2 focus:ring-teal-500 focus:border-teal-500 outline-none 
                          transition-all duration-200 backdrop-blur-sm hover:border-slate-500/50 resize-none"></textarea>
             </div>
         </div>
 
-        <div modal-footer class="flex justify-end gap-3">
+        <div modal-footer class="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
             <button (click)="showCreateModal.set(false)"
-                class="px-5 py-2.5 text-slate-400 hover:text-white font-semibold transition-colors cursor-pointer">
+                class="px-6 py-3 sm:px-5 sm:py-2.5 text-slate-400 hover:text-white font-semibold transition-colors cursor-pointer text-base border border-slate-700 sm:border-0 rounded-xl sm:rounded-none">
                 Cancel
             </button>
 
-            <button (click)="createGroup()" [disabled]="!newGroupName() || isCreating()" class="relative px-8 py-2.5 bg-gradient-to-r from-teal-600 to-teal-500 hover:from-teal-500 
-                     hover:to-teal-400 text-white rounded-xl font-bold shadow-xl shadow-teal-900/20 transition-all 
+            <button (click)="createGroup()" [disabled]="!newGroupName() || isCreating()" class="relative px-8 py-4 sm:py-2.5 bg-gradient-to-r from-teal-600 to-teal-500 hover:from-teal-500 
+                     hover:to-teal-400 text-white rounded-xl font-bold text-lg sm:text-base shadow-xl shadow-teal-900/20 transition-all 
                      duration-300 active:scale-95 disabled:from-slate-800 disabled:to-slate-800 disabled:text-slate-500 
-                     disabled:shadow-none disabled:cursor-not-allowed flex items-center gap-2 overflow-hidden group">
+                     disabled:shadow-none disabled:cursor-not-allowed flex items-center justify-center gap-2 overflow-hidden group">
                 <div class="absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0 -translate-x-full 
                     group-hover:translate-x-full transition-transform duration-700"></div>
 
                 @if (isCreating()) {
-                <svg class="animate-spin h-5 w-5 text-white relative z-10" xmlns="http://www.w3.org/2000/svg"
+                <svg class="animate-spin h-6 w-6 sm:h-5 sm:w-5 text-white relative z-10" xmlns="http://www.w3.org/2000/svg"
                     fill="none" viewBox="0 0 24 24">
                     <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                     <path class="opacity-75" fill="currentColor"
