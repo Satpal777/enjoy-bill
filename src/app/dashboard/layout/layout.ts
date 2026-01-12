@@ -1,32 +1,29 @@
 
-import { Component, OnInit, signal } from '@angular/core';
+
+import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { Group, Groups } from '../../core/services/supabase/groups';
-import { Supabase } from '../../core/services/supabase';
 import { Navigation } from "../../shared/components/navigation/navigation";
-import { NotificationDropdown } from "../../shared/components/notification-dropdown/notification-dropdown";
 import { StatsCard } from "../../shared/components/stats-card/stats-card";
 import { CurrencyPipe, DatePipe } from '@angular/common';
 import { EmptyState } from "../../shared/components/empty-state/empty-state";
 import { Modal } from "../../shared/components/modal/modal";
 import { FormsModule } from '@angular/forms';
-import { Invitation } from '../../shared/components/models/modet.types';
-import { ProfileDropdown } from '../../shared/components/profile-dropdown/profile-dropdown';
 
 @Component({
   selector: 'app-dashboard-layout',
-  imports: [FormsModule, Navigation, NotificationDropdown, ProfileDropdown, StatsCard, DatePipe, EmptyState, Modal, CurrencyPipe],
-  standalone: true,
+  imports: [FormsModule, Navigation, StatsCard, DatePipe, EmptyState, Modal, CurrencyPipe],
   templateUrl: './layout.html',
   styleUrl: './layout.css',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class DashboardLayout implements OnInit {
+  private groupsService = inject(Groups);
+  private router = inject(Router);
+
   // --- Signals ---
   groups = signal<Group[]>([]);
   loading = signal(true);
-  showNotifications = signal(false);
-  showProfilePopUp = signal(false);
-  invitations = signal<Invitation[]>([]);
   showCreateModal = signal(false);
   isCreating = signal(false);
   newGroupName = signal('');
@@ -34,16 +31,9 @@ export class DashboardLayout implements OnInit {
   totalYouOwe = signal(0);
   totalOwedToYou = signal(0);
 
-  constructor(
-    private groupsService: Groups,
-    private router: Router,
-    private supabase: Supabase
-  ) { }
-
   async ngOnInit() {
     await Promise.all([
       this.loadGroups(),
-      this.loadInvitations(),
       this.loadGlobalBalances()
     ]);
   }
@@ -88,33 +78,5 @@ export class DashboardLayout implements OnInit {
 
   showExpenses(groupId: string) {
     this.router.navigate(['expenses', groupId]);
-  }
-
-  async loadInvitations() {
-    try {
-      const invites = await this.groupsService.getPendingInvitations();
-      this.invitations.set(invites);
-    } catch (error) {
-      console.error('Error loading invites', error);
-    }
-  }
-
-  async handleInviteResponse(event: { id: string, accept: boolean }) {
-    try {
-      if (event.accept) {
-        await this.groupsService.acceptInvitation(event.id);
-        await this.loadGroups();
-      } else {
-        await this.groupsService.rejectInvitation(event.id);
-      }
-      await this.loadInvitations();
-    } catch (error) {
-      console.error('Error responding to invite', error);
-    }
-  }
-
-  logout() {
-    this.supabase.signOut();
-    this.router.navigate(['login']);
   }
 }

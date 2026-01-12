@@ -1,5 +1,5 @@
-<div class="py-20 text-center border-2 border-dashed rounded-2xl bg-slate-900/30" [class]="borderColorClass">
-    <div [class]="iconBgClass + ' h-16 w-16 rounded-full flex items-center justify-center mx-auto mb-4'">
+<div class="py-20 text-center border-2 border-dashed rounded-2xl bg-slate-900/30" [class]="borderColorClass()">
+    <div [class]="iconBgClass() + ' h-16 w-16 rounded-full flex items-center justify-center mx-auto mb-4'">
         <ng-content select="[empty-icon]"></ng-content>
     </div>
     <p class="text-slate-400 font-medium">{{ title() }}</p>

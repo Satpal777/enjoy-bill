@@ -38,7 +38,7 @@
 
             <!-- Action Buttons -->
             <div class="flex gap-3">
-                <button class="px-5 py-2.5 rounded-xl border border-slate-700/50 text-slate-300 font-semibold text-sm 
+                <button (click)="openSettleUpModal()" class="px-5 py-2.5 rounded-xl border border-slate-700/50 text-slate-300 font-semibold text-sm 
                        hover:bg-slate-800/50 hover:text-white transition-all active:scale-95 cursor-pointer">
                     Settle Up
                 </button>
@@ -511,6 +511,10 @@
     </app-expense-details>
     }
 
-
+    <!-- Settle Up Modal -->
+    <app-settle-up-modal [isOpen]="showSettleUpModal()" [groupId]="selectedGroup()?.id || ''" [members]="members()"
+        [balances]="balances()" [currentUserId]="userId()?.id || ''" (close)="showSettleUpModal.set(false)"
+        (settle)="handleSettlement($event)">
+    </app-settle-up-modal>
 
 </div>

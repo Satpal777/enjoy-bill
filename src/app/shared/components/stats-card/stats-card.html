@@ -2,7 +2,7 @@
                 flex items-center justify-between group hover:border-slate-600/50 transition-colors">
     <div>
         <p class="text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">{{ label() }}</p>
-        <p class="text-3xl font-bold tracking-tight" [class]="valueColorClass">{{ value() }}</p>
+        <p class="text-3xl font-bold tracking-tight" [class]="valueColorClass()">{{ value() }}</p>
     </div>
     <div
         [class]="iconBgClass + ' h-12 w-12 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300'">

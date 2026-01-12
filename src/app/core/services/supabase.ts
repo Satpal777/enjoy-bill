@@ -101,6 +101,10 @@ export class Supabase {
     return this.currentUser.value;
   }
 
+  getCurrentUserId(): string | null {
+    return this.currentUser.value?.id ?? null;
+  }
+
   isAuthenticated(): boolean {
     return this.currentUser.value !== null;
   }

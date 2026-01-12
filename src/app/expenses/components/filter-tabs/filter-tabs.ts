@@ -1,12 +1,11 @@
-import { Component, input, output } from '@angular/core';
-import { NgClass } from '@angular/common';
+import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
 
 @Component({
   selector: 'app-filter-tabs',
-  standalone: true,
-  imports: [NgClass],
+  imports: [],
   templateUrl: './filter-tabs.html',
   styleUrl: './filter-tabs.css',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class FilterTabs {
   filters = input<{ value: string, label: string }[]>([]);
