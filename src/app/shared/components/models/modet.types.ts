@@ -70,7 +70,7 @@ export interface ExpenseFromDb {
     expense_date: string;
     payer: {
         id: string;
-        display_name: string;
+        username: string;
     };
     my_split: Array<{
         amount_owed: number;
@@ -98,7 +98,7 @@ export interface Invitation {
 export interface PendingInvitations extends Invitation {
     invitee_email: string;
     inviter: {
-        display_name: string
+        username: string
     }
     status: string
 }
@@ -111,7 +111,7 @@ export interface InvitationResponse {
 export interface User {
     id: string;
     email: string;
-    display_name?: string;
+    username?: string;
     avatar_url?: string;
     created_at: string;
 }
@@ -174,32 +174,32 @@ export interface PaginatedResponse<T> {
 
 
 export interface Profile {
-  id: string;
-  display_name: string | null;
-  avatar_url: string | null;
+    id: string;
+    username: string | null;
+    avatar_url: string | null;
 }
 
 export interface ExpenseSplit {
-  amount_owed: number;
-  user: Profile; 
+    amount_owed: number;
+    user: Profile;
 }
 
 export interface ExpenseGroup {
-  id: string;
-  name: string;
+    id: string;
+    name: string;
 }
 
 export interface ExpenseDetail {
-  id: string;
-  description: string;
-  total_amount: number;
-  currency: string;
-  category: string;
-  expense_date: string;
-  created_at: string;
-  updated_at:string;
-  
-  group?: ExpenseGroup;          
-  paid_by_user?: Profile;       
-  splits?: ExpenseSplit[];    
+    id: string;
+    description: string;
+    total_amount: number;
+    currency: string;
+    category: string;
+    expense_date: string;
+    created_at: string;
+    updated_at: string;
+
+    group?: ExpenseGroup;
+    paid_by_user?: Profile;
+    splits?: ExpenseSplit[];
 }

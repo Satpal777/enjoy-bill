@@ -108,7 +108,7 @@ export class Groups {
       joined_at,
       profiles:user_id (
         id,
-        display_name,
+        username,
         avatar_url
       )
     `)
@@ -121,7 +121,7 @@ export class Groups {
       *,
       payer:paid_by (
         id,
-        display_name,
+        username,
         avatar_url
       ),
       my_split:expense_splits (
@@ -137,12 +137,13 @@ export class Groups {
       .select(`
         *,
         inviter:inviter_id (
-          display_name,
+          username,
           avatar_url
         )
       `)
       .eq('group_id', groupId)
-      .eq('status', 'pending');
+      .eq('status', 'pending')
+      .not('invitee_email', 'is', null);
 
     const [groupData, members, expenses, invites] = await Promise.all([
       groupPromise,
@@ -219,7 +220,7 @@ export class Groups {
       created_at,
       expires_at,
       group:groups ( name ),
-      inviter:profiles!inviter_id ( display_name )
+      inviter:profiles!inviter_id ( username )
     `)
       .eq('invitee_email', user.email)
       .eq('status', 'pending');
@@ -235,7 +236,7 @@ export class Groups {
         created_at: inv['created_at'] as string,
         expires_at: inv['expires_at'] as string,
         group_name: (inv['group'] as { name?: string })?.name || 'Unknown',
-        inviter_name: (inv['inviter'] as { display_name?: string })?.display_name || 'Someone'
+        inviter_name: (inv['inviter'] as { username?: string })?.username || 'Someone'
       };
     });
   }

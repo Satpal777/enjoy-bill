@@ -33,10 +33,10 @@ export class Expenses {
       .select(`
       *,
       group:groups ( id, name ),
-      paid_by_user:profiles!paid_by ( id, display_name ),
+      paid_by_user:profiles!paid_by ( id, username ),
       splits:expense_splits (
         amount_owed,
-        user:profiles ( id, display_name )
+        user:profiles ( id, username )
       )
     `)
       .eq('id', id)

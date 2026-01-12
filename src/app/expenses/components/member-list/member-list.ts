@@ -4,6 +4,7 @@ import { CommonModule } from '@angular/common';
 export interface MemberStatData {
   id: string;
   name: string;
+  avatar?: string;
   initials: string;
   balanceAmount: number;
 }

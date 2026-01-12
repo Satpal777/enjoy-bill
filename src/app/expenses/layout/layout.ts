@@ -153,6 +153,7 @@ export class ExpenseLayout implements OnInit, OnDestroy {
     return currentMembers.map(member => ({
       id: member.id,
       name: member.name,
+      avatar: member.avatar,
       initials: member.name.charAt(0).toUpperCase(),
       balanceAmount: currentBalances.find(b => b.user_id === member.id)?.balance || 0
     }));
@@ -201,10 +202,12 @@ export class ExpenseLayout implements OnInit, OnDestroy {
 
       this.selectedGroup.set(groupData);
 
+      console.log(members)
+
       // Format Members
       const formattedMembers: Member[] = (members || []).map((m: any) => ({
         id: m.profiles.id,
-        name: m.profiles.display_name || 'Unknown',
+        name: m.profiles.username || 'Unknown',
         avatar: m.profiles.avatar_url,
         joinedAt: m.joined_at
       }));
@@ -229,7 +232,7 @@ export class ExpenseLayout implements OnInit, OnDestroy {
           amount: e.total_amount,
           currency: e.currency,
           date: new Date(e.expense_date),
-          paidBy: isPayer ? 'You' : (e.payer?.display_name || 'Unknown'),
+          paidBy: isPayer ? 'You' : (e.payer?.username || 'Unknown'),
           payerId: e.payer?.id,
           category: e.category,
           isLent: isPayer,
