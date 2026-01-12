@@ -14,6 +14,7 @@ export interface Group {
 
   member_count?: number;
   expense_count?: number;
+  icon_url?: string;
 }
 
 @Injectable({
@@ -62,6 +63,7 @@ export class Groups {
         id: group['id'] as string,
         name: group['name'] as string,
         description: group['description'] as string | undefined,
+        icon_url: group['icon_url'] as string | undefined,
         created_at: group['created_at'] as string,
         // Safely access counts from the arrays
         member_count: (group['group_members'] as Array<{ count?: number }>)?.[0]?.count || 0,
@@ -70,7 +72,7 @@ export class Groups {
     });
   }
 
-  async createGroup(name: string, description: string = '') {
+  async createGroup(name: string, description: string = '', icon_url?: string) {
     const userId = this.supabaseSerice.getCurrentUserId();
 
     if (!userId) throw new Error('Not authenticated');
@@ -81,7 +83,8 @@ export class Groups {
       .insert({
         name,
         description,
-        created_by: userId
+        created_by: userId,
+        icon_url
       })
       .select()
       .single();
