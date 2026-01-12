@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject, OnInit, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { Group, Groups } from '../../core/services/supabase/groups';
 import { Navigation } from "../../shared/components/navigation/navigation";
@@ -127,6 +127,41 @@ export class DashboardLayout implements OnInit {
       console.error('Error creating group:', error);
     } finally {
       this.isCreating.set(false);
+    }
+  }
+
+  // Delete group
+  groupToDelete = signal<string | null>(null);
+  groupToDeleteName = computed(() => {
+    const groupId = this.groupToDelete();
+    if (!groupId) return '';
+    return this.groups().find(g => g.id === groupId)?.name || '';
+  });
+  isDeleting = signal(false);
+
+  confirmDelete(groupId: string, event: Event) {
+    event.stopPropagation(); // Prevent navigation to group
+    this.groupToDelete.set(groupId);
+  }
+
+  cancelDelete() {
+    this.groupToDelete.set(null);
+  }
+
+  async deleteGroup() {
+    const groupId = this.groupToDelete();
+    if (!groupId) return;
+
+    this.isDeleting.set(true);
+    try {
+      await this.groupsService.deleteGroup(groupId);
+      this.groupToDelete.set(null);
+      await this.loadGroups();
+    } catch (error: any) {
+      console.error('Error deleting group:', error);
+      alert(error.message || 'Failed to delete group. Please try again.');
+    } finally {
+      this.isDeleting.set(false);
     }
   }
 

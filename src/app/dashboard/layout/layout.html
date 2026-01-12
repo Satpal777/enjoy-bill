@@ -102,10 +102,24 @@
                             {{ group.name.charAt(0).toUpperCase() }}
                             }
                         </div>
-                        <span class="hidden sm:block text-[10px] font-bold text-slate-500 bg-slate-900/60 px-2 py-1 rounded-lg border 
-                             border-slate-700/50 uppercase tracking-wide">
-                            {{ group.created_at | date:'MMM yyyy' }}
-                        </span>
+
+                        <div class="flex items-center gap-2">
+                            <span class="hidden sm:block text-[10px] font-bold text-slate-500 bg-slate-900/60 px-2 py-1 rounded-lg border 
+                                 border-slate-700/50 uppercase tracking-wide">
+                                {{ group.created_at | date:'MMM yyyy' }}
+                            </span>
+
+                            <!-- Delete Button -->
+                            <button (click)="confirmDelete(group.id, $event)"
+                                class="opacity-0 group-hover:opacity-100 p-2 hover:bg-red-500/20 rounded-lg transition-all cursor-pointer"
+                                title="Delete group">
+                                <svg class="w-4 h-4 text-red-400 hover:text-red-300" fill="none" stroke="currentColor"
+                                    viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                </svg>
+                            </button>
+                        </div>
                     </div>
 
                     <!-- Content -->
@@ -312,4 +326,54 @@
             </button>
         </div>
     </app-modal>
+
+    <!-- Delete Confirmation Modal -->
+    @if (groupToDelete()) {
+    <app-modal [isOpen]="true" title="Delete Group" (close)="cancelDelete()">
+        <svg modal-icon xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+            stroke="currentColor" class="w-6 h-6 sm:w-5 sm:h-5 text-red-400">
+            <path stroke-linecap="round" stroke-linejoin="round"
+                d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
+        </svg>
+
+        <div modal-content class="space-y-4">
+            <div class="bg-red-500/10 border border-red-500/30 rounded-xl p-4">
+                <p class="text-white font-semibold mb-2">⚠️ Warning</p>
+                <p class="text-sm text-slate-300">
+                    This will permanently delete the group and all associated expenses, settlements, and invitations.
+                    This action cannot be undone.
+                </p>
+            </div>
+
+            <p class="text-slate-400 text-sm">
+                Are you sure you want to delete <span class="text-white font-semibold">{{ groupToDeleteName() }}</span>?
+            </p>
+        </div>
+
+        <div modal-footer class="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
+            <button (click)="cancelDelete()"
+                class="px-6 py-3 sm:px-5 sm:py-2.5 text-slate-400 hover:text-white font-semibold transition-colors cursor-pointer text-base border border-slate-700 sm:border-0 rounded-xl sm:rounded-none">
+                Cancel
+            </button>
+
+            <button (click)="deleteGroup()" [disabled]="isDeleting()"
+                class="relative px-8 py-4 sm:py-2.5 bg-red-600 hover:bg-red-500 text-white rounded-xl font-bold text-lg sm:text-base shadow-xl shadow-red-900/20 transition-all 
+                         duration-300 active:scale-95 disabled:bg-slate-800 disabled:text-slate-500 
+                         disabled:shadow-none disabled:cursor-not-allowed flex items-center justify-center gap-2 cursor-pointer">
+                @if (isDeleting()) {
+                <svg class="animate-spin h-6 w-6 sm:h-5 sm:w-5 text-white" xmlns="http://www.w3.org/2000/svg"
+                    fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor"
+                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                    </path>
+                </svg>
+                <span>Deleting...</span>
+                } @else {
+                <span>Delete Group</span>
+                }
+            </button>
+        </div>
+    </app-modal>
+    }
 </div>

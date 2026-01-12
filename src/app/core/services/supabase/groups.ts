@@ -94,6 +94,31 @@ export class Groups {
     return groupData;
   }
 
+  async deleteGroup(groupId: string) {
+    const userId = this.supabaseSerice.getCurrentUserId();
+    if (!userId) throw new Error('Not authenticated');
+
+    // Check if user is the creator
+    const { data: group, error: fetchError } = await this.client
+      .from('groups')
+      .select('created_by')
+      .eq('id', groupId)
+      .single();
+
+    if (fetchError) throw fetchError;
+    if (group.created_by !== userId) {
+      throw new Error('Only the group creator can delete this group');
+    }
+
+    // Delete the group (cascading deletes will handle related records)
+    const { error: deleteError } = await this.client
+      .from('groups')
+      .delete()
+      .eq('id', groupId);
+
+    if (deleteError) throw deleteError;
+  }
+
   async getGroupDetails(groupId: string) {
 
     const userId = this.supabaseSerice.getCurrentUserId();
