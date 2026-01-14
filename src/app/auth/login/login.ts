@@ -63,7 +63,12 @@ export class Login implements OnInit {
 
       // Mark user as having logged in before
       localStorage.setItem('hasLoggedIn', 'true');
-      this.router.navigate(['/dashboard']);
+      const returnUrl = this.route.snapshot.queryParams['returnUrl'];
+      if (returnUrl && returnUrl.includes('invite')) {
+        this.router.navigateByUrl(returnUrl);
+      } else {
+        this.router.navigate(['/dashboard']);
+      }
     } catch (error: unknown) {
       const message = error instanceof Error ? error.message : 'Failed to sign in. Please try again.';
       this.errorMessage.set(message);
