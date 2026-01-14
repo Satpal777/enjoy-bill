@@ -1,59 +1,87 @@
-# EnjoyBill
+# Enjoy Bill 💸
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 21.0.4.
+> **Effortless Expense Tracking & Splitting**
 
-## Development server
+Find financial clarity in a cozy, organized space. Track, split, and relax. Enjoy Bill makes managing shared expenses with friends, roommates, and family simple and stress-free.
 
-To start a local development server, run:
+<p align="center">
+  <img src="previews/laptop.png" alt="Desktop Preview" width="70%" />
+  &nbsp; &nbsp;
+  <img src="previews/mobile.png" alt="Mobile Preview" width="20%" />
+</p>
 
-```bash
-ng serve
-```
+## ✨ Features
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+- **🚀 Smart Group Management**: Create groups for trips, households, or occasional outings.
+- **💰 Expense Tracking**: Easily record expenses and see who paid what.
+- **➗ Fair Splitting**: Split bills equally or customize amounts for each person.
+- **📉 Real-time Balances**: Instantly see who owes whom and how much.
+- **✅ Settle Up**: Mark debts as paid with a single tap.
+- **📊 Dashboard Overview**: Get a high-level view of your total debts and credits.
+- **🔐 Secure Authentication**: Powered by Supabase for secure user management.
+- **📱 Responsive Design**: Works seamlessly on desktop, tablet, and mobile.
 
-## Code scaffolding
+## 🛠️ Tech Stack
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+- **Frontend**: [Angular v21](https://angular.dev/)
+- **Styling**: [Tailwind CSS v4](https://tailwindcss.com/)
+- **Backend / Auth**: [Supabase](https://supabase.com/)
+- **State Management**: Angular Signals
+- **Testing**: Vitest
 
-```bash
-ng generate component component-name
-```
+## 🚀 Getting Started
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+Follow these steps to set up the project locally.
 
-```bash
-ng generate --help
-```
+### Prerequisites
 
-## Building
+- Node.js (Latest LTS recommended)
+- npm
 
-To build the project run:
+### Installation
 
-```bash
-ng build
-```
+1.  **Clone the repository**
+    ```bash
+    git clone https://github.com/Satpal777/enjoy-bill.git
+    cd enjoy-bill
+    ```
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+2.  **Install dependencies**
+    ```bash
+    npm install
+    ```
 
-## Running unit tests
+3.  **Environment Setup**
+    Create a `.env` file in the root directory (or `.env.local`) and add your Supabase credentials:
+    ```env
+    NG_APP_SUPABASE_URL=your_supabase_url
+    NG_APP_SUPABASE_KEY=your_supabase_anon_key
+    ```
 
-To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
+4.  **Run the development server**
+    ```bash
+    ng serve
+    ```
+    Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
 
-```bash
-ng test
-```
+## 📦 Build
 
-## Running end-to-end tests
+Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
 
-For end-to-end (e2e) testing, run:
+## 🧪 Tests
 
-```bash
-ng e2e
-```
+Run `ng test` to execute unit tests via [Vitest](https://vitest.dev/).
 
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
+## 🤝 Contributing
 
-## Additional Resources
+Contributions are welcome! Please feel free to submit a Pull Request.
 
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+1.  Fork the project
+2.  Create your feature branch (`git checkout -b feature/AmazingFeature`)
+3.  Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4.  Push to the branch (`git push origin feature/AmazingFeature`)
+5.  Open a Pull Request
+
+## 📄 License
+
+This project is open source and available under the [MIT License](LICENSE).
