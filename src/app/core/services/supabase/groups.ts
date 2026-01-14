@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { Supabase } from '../supabase';
 import { SupabaseClient } from '@supabase/supabase-js';
 import { BehaviorSubject } from 'rxjs';
@@ -14,18 +14,15 @@ export interface Group {
 
   member_count?: number;
   expense_count?: number;
+  icon_url?: string;
 }
 
 @Injectable({
   providedIn: 'root',
 })
 export class Groups {
-
-  private client: SupabaseClient;
-
-  constructor(private supabaseSerice: Supabase) {
-    this.client = this.supabaseSerice.getSupabaseClient();
-  }
+  private supabaseSerice = inject(Supabase);
+  private client: SupabaseClient = this.supabaseSerice.getSupabaseClient();
 
   async getGlobalBalances() {
     const { data, error } = await this.client
@@ -40,8 +37,8 @@ export class Groups {
   }
 
   async getUserGroups(): Promise<Group[]> {
-    const { data: { user } } = await this.client.auth.getUser();
-    if (!user) return [];
+    const userId = this.supabaseSerice.getCurrentUserId();
+    if (!userId) return [];
 
     const { data, error } = await this.client
       .from('groups')
@@ -51,7 +48,7 @@ export class Groups {
       group_members(count),
       expenses(count)
     `)
-      .eq('my_membership.user_id', user.id)
+      .eq('my_membership.user_id', userId)
       .order('updated_at', { ascending: false });
 
     if (error) {
@@ -60,20 +57,23 @@ export class Groups {
     }
 
     // Map the response to your interface
-    return (data || []).map((g: any) => ({
-      id: g.id,
-      name: g.name,
-      description: g.description,
-      created_at: g.created_at,
-      // Safely access counts from the arrays
-      member_count: g.group_members?.[0]?.count || 0,
-      expense_count: g.expenses?.[0]?.count || 0
-    }));
+    return (data || []).map((g: unknown) => {
+      const group = g as Record<string, unknown>;
+      return {
+        id: group['id'] as string,
+        name: group['name'] as string,
+        description: group['description'] as string | undefined,
+        icon_url: group['icon_url'] as string | undefined,
+        created_at: group['created_at'] as string,
+        // Safely access counts from the arrays
+        member_count: (group['group_members'] as Array<{ count?: number }>)?.[0]?.count || 0,
+        expense_count: (group['expenses'] as Array<{ count?: number }>)?.[0]?.count || 0
+      };
+    });
   }
 
-  async createGroup(name: string, description: string = '') {
-    const user = await this.client.auth.getUser();
-    const userId = user.data.user?.id;
+  async createGroup(name: string, description: string = '', icon_url?: string) {
+    const userId = this.supabaseSerice.getCurrentUserId();
 
     if (!userId) throw new Error('Not authenticated');
 
@@ -83,7 +83,8 @@ export class Groups {
       .insert({
         name,
         description,
-        created_by: userId
+        created_by: userId,
+        icon_url
       })
       .select()
       .single();
@@ -93,10 +94,34 @@ export class Groups {
     return groupData;
   }
 
+  async deleteGroup(groupId: string) {
+    const userId = this.supabaseSerice.getCurrentUserId();
+    if (!userId) throw new Error('Not authenticated');
+
+    // Check if user is the creator
+    const { data: group, error: fetchError } = await this.client
+      .from('groups')
+      .select('created_by')
+      .eq('id', groupId)
+      .single();
+
+    if (fetchError) throw fetchError;
+    if (group.created_by !== userId) {
+      throw new Error('Only the group creator can delete this group');
+    }
+
+    // Delete the group (cascading deletes will handle related records)
+    const { error: deleteError } = await this.client
+      .from('groups')
+      .delete()
+      .eq('id', groupId);
+
+    if (deleteError) throw deleteError;
+  }
+
   async getGroupDetails(groupId: string) {
 
-    const user = await this.client.auth.getUser();
-    const userId = user.data.user?.id;
+    const userId = this.supabaseSerice.getCurrentUserId();
 
     const groupPromise = this.client
       .from('groups')
@@ -111,7 +136,7 @@ export class Groups {
       joined_at,
       profiles:user_id (
         id,
-        display_name,
+        username,
         avatar_url
       )
     `)
@@ -124,7 +149,7 @@ export class Groups {
       *,
       payer:paid_by (
         id,
-        display_name,
+        username,
         avatar_url
       ),
       my_split:expense_splits (
@@ -140,12 +165,13 @@ export class Groups {
       .select(`
         *,
         inviter:inviter_id (
-          display_name,
+          username,
           avatar_url
         )
       `)
       .eq('group_id', groupId)
-      .eq('status', 'pending');
+      .eq('status', 'pending')
+      .not('invitee_email', 'is', null);
 
     const [groupData, members, expenses, invites] = await Promise.all([
       groupPromise,
@@ -181,9 +207,10 @@ export class Groups {
   }
 
   async inviteMember(groupId: string, email: string | null) {
-    const { data: { user } } = await this.client.auth.getUser();
+    const user = this.supabaseSerice.getCurrentUser();
+    const userId = this.supabaseSerice.getCurrentUserId();
 
-    if (!user) {
+    if (!user || !userId) {
       throw new Error('You must be logged in to invite members.');
     }
 
@@ -192,7 +219,7 @@ export class Groups {
       .insert({
         group_id: groupId,
         invitee_email: email,
-        inviter_id: user.id,
+        inviter_id: userId,
         status: 'pending'
       })
       .select()
@@ -211,7 +238,7 @@ export class Groups {
   }
 
   async getPendingInvitations() {
-    const { data: { user } } = await this.client.auth.getUser();
+    const user = this.supabaseSerice.getCurrentUser();
     if (!user?.email) return [];
 
     const { data, error } = await this.client
@@ -221,7 +248,7 @@ export class Groups {
       created_at,
       expires_at,
       group:groups ( name ),
-      inviter:profiles!inviter_id ( display_name )
+      inviter:profiles!inviter_id ( username )
     `)
       .eq('invitee_email', user.email)
       .eq('status', 'pending');
@@ -230,13 +257,16 @@ export class Groups {
       console.error('Error fetching invites:', error);
       return [];
     }
-    return (data || []).map((invite: any) => ({
-      id: invite.id,
-      created_at: invite.created_at,
-      expires_at: invite.expires_at,
-      group_name: invite.group?.name || 'Unknown',
-      inviter_name: invite.inviter?.display_name || 'Someone'
-    }));
+    return (data || []).map((invite: unknown) => {
+      const inv = invite as Record<string, unknown>;
+      return {
+        id: inv['id'] as string,
+        created_at: inv['created_at'] as string,
+        expires_at: inv['expires_at'] as string,
+        group_name: (inv['group'] as { name?: string })?.name || 'Unknown',
+        inviter_name: (inv['inviter'] as { username?: string })?.username || 'Someone'
+      };
+    });
   }
 
   /**
@@ -249,6 +279,58 @@ export class Groups {
     if (error) {
       console.error('Error accepting invite:', error);
       throw error;
+    }
+  }
+
+
+  /**
+   * Record a settlement payment between two members
+   * Creates an expense with is_settlement = true
+   */
+  async recordSettlement(settlement: {
+    groupId: string;
+    payerId: string;
+    payeeId: string;
+    amount: number;
+    currency: string;
+    notes?: string;
+    proofImageUrl?: string;
+  }): Promise<void> {
+    // Create the settlement expense
+    const { data: expenseData, error: expenseError } = await this.client
+      .from('expenses')
+      .insert({
+        group_id: settlement.groupId,
+        paid_by: settlement.payerId,
+        description: settlement.notes || 'Settlement payment',
+        total_amount: settlement.amount,
+        currency: settlement.currency,
+        category: 'Settlement',
+        is_settlement: true,
+        expense_date: new Date().toISOString().split('T')[0],
+        proof_image_url: settlement.proofImageUrl
+      })
+      .select('id')
+      .single();
+
+    if (expenseError) {
+      console.error('Error recording settlement expense:', expenseError);
+      throw expenseError;
+    }
+
+    // Create the expense split for the payee
+    // This ensures the settlement reduces the balance correctly
+    const { error: splitError } = await this.client
+      .from('expense_splits')
+      .insert({
+        expense_id: expenseData.id,
+        user_id: settlement.payeeId,
+        amount_owed: settlement.amount
+      });
+
+    if (splitError) {
+      console.error('Error creating settlement split:', splitError);
+      throw splitError;
     }
   }
 
@@ -306,7 +388,7 @@ export class Groups {
   }
 
   subscribeToGroupChanges(groupId: string) {
-    const updateChannel = new BehaviorSubject({});
+    const updateChannel = new BehaviorSubject<boolean>(false);
     const channel = this.client
       .channel('group-updates')
       .on(
@@ -317,8 +399,8 @@ export class Groups {
           table: 'expenses',
           filter: `group_id=eq.${groupId}`,
         },
-        (payload) => {
-          updateChannel.next(payload);
+        () => {
+          updateChannel.next(true);
         }
       )
       .subscribe();

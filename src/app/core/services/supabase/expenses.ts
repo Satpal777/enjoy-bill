@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { SupabaseClient } from '@supabase/supabase-js';
 import { Supabase } from '../supabase';
 import { ExpenseDbPayload, ExpenseDetail } from '../../../shared/components/models/modet.types';
@@ -7,16 +7,11 @@ import { ExpenseDbPayload, ExpenseDetail } from '../../../shared/components/mode
   providedIn: 'root',
 })
 export class Expenses {
-
-  private client: SupabaseClient;
-
-  constructor(private supabaseSerice: Supabase) {
-    this.client = this.supabaseSerice.getSupabaseClient();
-  }
+  private supabaseSerice = inject(Supabase);
+  private client: SupabaseClient = this.supabaseSerice.getSupabaseClient();
 
   async createExpense(dbPayload: ExpenseDbPayload) {
-    const user = await this.client.auth.getUser();
-    const userId = user.data.user?.id;
+    const userId = this.supabaseSerice.getCurrentUserId();
 
     if (!userId) throw new Error('Not authenticated');
 
@@ -38,10 +33,10 @@ export class Expenses {
       .select(`
       *,
       group:groups ( id, name ),
-      paid_by_user:profiles!paid_by ( id, display_name ),
+      paid_by_user:profiles!paid_by ( id, username ),
       splits:expense_splits (
         amount_owed,
-        user:profiles ( id, display_name )
+        user:profiles ( id, username )
       )
     `)
       .eq('id', id)
@@ -58,7 +53,7 @@ export class Expenses {
       .eq('id', id);
   }
 
-  async updateExpense(id: string, payload: any) {
+  async updateExpense(id: string, payload: Partial<ExpenseDbPayload>) {
     const { data, error } = await this.client
       .from('expenses')
       .update(payload)

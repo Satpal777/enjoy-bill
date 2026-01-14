@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, computed, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, OnDestroy, computed, inject, signal, effect } from '@angular/core';
 import { CommonModule, CurrencyPipe, DatePipe } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators, FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -11,11 +11,11 @@ import { Supabase } from '../../core/services/supabase';
 import { FilterTabs } from '../components/filter-tabs/filter-tabs';
 import { ExpenseCard, ExpenseCardData } from '../components/expense-card/expense-card';
 import { MemberList } from '../components/member-list/member-list';
-import { Invitation, PendingInvitations } from '../../shared/components/models/modet.types';
+import { PendingInvitations } from '../../shared/components/models/modet.types';
 import { ToolTipCard } from '../../shared/directive/tool-tip-card';
 import { Expenses } from '../../core/services/supabase/expenses';
-import { FormInput } from "../components/form-input/form-input";
 import { ExpenseDetails } from '../components/expense-details/expense-details';
+import { SettleUpModal, SettlementData } from '../components/settle-up-modal/settle-up-modal';
 
 interface Member {
   id: string;
@@ -41,7 +41,6 @@ interface ExpenseDbPayload {
 
 @Component({
   selector: 'app-expense-layout',
-  standalone: true,
   imports: [
     CommonModule,
     ReactiveFormsModule,
@@ -52,13 +51,15 @@ interface ExpenseDbPayload {
     ExpenseCard,
     MemberList,
     Modal,
-    ExpenseDetails,
+    ToolTipCard,
     CurrencyPipe,
     DatePipe,
-    ToolTipCard
+    ExpenseDetails,
+    SettleUpModal
   ],
   templateUrl: './layout.html',
   styleUrl: './layout.css',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ExpenseLayout implements OnInit, OnDestroy {
   private router = inject(Router);
@@ -72,14 +73,17 @@ export class ExpenseLayout implements OnInit, OnDestroy {
   loading = signal<boolean>(true);
   isCreating = signal<boolean>(false);
   isInviting = signal<boolean>(false);
-  showCreateModal = signal<boolean>(false);
-  showInviteModal = signal<boolean>(false);
-  showExpenseDetailModal = signal<boolean>(false);
   loadingExpenseData = signal<boolean>(false);
+
+  // Modal states
+  showCreateModal = signal(false);
+  showInviteModal = signal(false);
+  showExpenseDetailModal = signal(false);
+  showSettleUpModal = signal(false);
+  selectedExpenseId = signal<string | null>(null);
 
 
   // Data
-  selectedExpenseId = signal<string | null>(null);
   selectedGroup = signal<Group | null>(null);
   expenses = signal<ExpenseCardData[]>([]);
   members = signal<Member[]>([]);
@@ -90,8 +94,20 @@ export class ExpenseLayout implements OnInit, OnDestroy {
   userId = toSignal(this.supabaseService.currentUser$);
 
   // Forms
-  expenseForm: FormGroup;
-  inviteForm: FormGroup;
+  expenseForm: FormGroup = this.fb.group({
+    description: ['', Validators.required],
+    amount: [null, [Validators.required, Validators.min(0.01)]],
+    currency: ['INR', Validators.required],
+    paidBy: [null, Validators.required],
+    date: [new Date().toISOString().split('T')[0], Validators.required],
+    isEdit: false,
+    category: ['', Validators.required]
+  });
+
+  inviteForm: FormGroup = this.fb.group({
+    email: ['', [Validators.required, Validators.email]]
+  });
+
   inviteError = signal<string | null>(null);
   inviteSuccess = signal<boolean>(false);
   invitedEmail = signal<string>('');
@@ -101,8 +117,9 @@ export class ExpenseLayout implements OnInit, OnDestroy {
   activeFilter = signal<string>('all');
   filterOptions = [
     { value: 'all', label: 'All expenses' },
-    { value: 'my', label: 'My expenses' },
-    { value: 'to_pay', label: 'To pay' }
+    { value: 'my', label: 'Lented' },
+    { value: 'to_pay', label: 'Borrowed' },
+    { value: 'settle_up', label: 'Settled' }
   ];
 
   // Computed
@@ -117,9 +134,11 @@ export class ExpenseLayout implements OnInit, OnDestroy {
   showExpenses = computed(() => {
     switch (this.activeFilter()) {
       case 'my':
-        return this.expenses().filter(e => e.myShare > 0);
+        return this.expenses().filter(e => e.isLent && !e.isSettlement);
       case 'to_pay':
-        return this.expenses().filter(e => !e.isLent);
+        return this.expenses().filter(e => !e.isLent && !e.isSettlement);
+      case 'settle_up':
+        return this.expenses().filter(e => e.isSettlement);
       case 'all':
       default:
         return this.expenses();
@@ -134,30 +153,13 @@ export class ExpenseLayout implements OnInit, OnDestroy {
     return currentMembers.map(member => ({
       id: member.id,
       name: member.name,
+      avatar: member.avatar,
       initials: member.name.charAt(0).toUpperCase(),
       balanceAmount: currentBalances.find(b => b.user_id === member.id)?.balance || 0
     }));
   });
 
-  updateChannelSubscription: any;
-
-  constructor() {
-    // Expense Form
-    this.expenseForm = this.fb.group({
-      description: ['', Validators.required],
-      amount: [null, [Validators.required, Validators.min(0.01)]],
-      currency: ['INR', Validators.required],
-      paidBy: [null, Validators.required],
-      date: [new Date().toISOString().split('T')[0], Validators.required],
-      isEdit: false,
-      category: ['', Validators.required]
-    });
-
-    // Invite Form
-    this.inviteForm = this.fb.group({
-      email: ['', [Validators.required, Validators.email]]
-    });
-  }
+  updateChannelSubscription: (() => void) | undefined;
 
   get isEdit() {
     return this.expenseForm.get('isEdit')?.value;
@@ -169,7 +171,10 @@ export class ExpenseLayout implements OnInit, OnDestroy {
       this.loadData(groupId);
       const { unsubscribe, subscribe } = this.groupsService.subscribeToGroupChanges(groupId);
       this.updateChannelSubscription = unsubscribe;
-      subscribe().subscribe((val) => { val && this.loadData(groupId); });
+      subscribe().subscribe((val) => {
+        val && this.loadData(groupId);
+        console.log(val);
+      });
     }
   }
 
@@ -197,10 +202,12 @@ export class ExpenseLayout implements OnInit, OnDestroy {
 
       this.selectedGroup.set(groupData);
 
+      console.log(members)
+
       // Format Members
       const formattedMembers: Member[] = (members || []).map((m: any) => ({
         id: m.profiles.id,
-        name: m.profiles.display_name || 'Unknown',
+        name: m.profiles.username || 'Unknown',
         avatar: m.profiles.avatar_url,
         joinedAt: m.joined_at
       }));
@@ -212,7 +219,12 @@ export class ExpenseLayout implements OnInit, OnDestroy {
       this.expenses.set((expenses || []).map((e: any) => {
         const isPayer = e.payer?.id === userData?.id;
         const myConsumption = e.my_split?.[0]?.amount_owed || 0;
-        const displayAmount = isPayer ? e.total_amount - myConsumption : myConsumption;
+
+        // For settlements, show the full amount
+        // For regular expenses, show the calculated share
+        const displayAmount = e.is_settlement
+          ? e.total_amount
+          : (isPayer ? e.total_amount - myConsumption : myConsumption);
 
         return {
           id: e.id,
@@ -220,11 +232,12 @@ export class ExpenseLayout implements OnInit, OnDestroy {
           amount: e.total_amount,
           currency: e.currency,
           date: new Date(e.expense_date),
-          paidBy: isPayer ? 'You' : (e.payer?.display_name || 'Unknown'),
+          paidBy: isPayer ? 'You' : (e.payer?.username || 'Unknown'),
           payerId: e.payer?.id,
           category: e.category,
           isLent: isPayer,
-          myShare: displayAmount
+          myShare: displayAmount,
+          isSettlement: e.is_settlement
         };
       }));
 
@@ -325,6 +338,29 @@ export class ExpenseLayout implements OnInit, OnDestroy {
     this.router.navigate(['/dashboard']);
   }
 
+  openSettleUpModal() {
+    this.showSettleUpModal.set(true);
+  }
+
+  async handleSettlement(settlement: SettlementData) {
+    try {
+      await this.groupsService.recordSettlement(settlement);
+      this.showSettleUpModal.set(false);
+
+      // Reload balances to reflect the settlement
+      const groupId = this.route.snapshot.paramMap.get('id');
+      if (groupId) {
+        await this.loadBalances(groupId);
+      }
+
+      // Show success message (you can add a toast notification here)
+      console.log('Settlement recorded successfully');
+    } catch (error) {
+      console.error('Error recording settlement:', error);
+      // Show error message (you can add a toast notification here)
+    }
+  }
+
   resetForm() {
     const currentUserId = this.userId()?.id;
     this.expenseForm.reset({
@@ -398,7 +434,7 @@ export class ExpenseLayout implements OnInit, OnDestroy {
     let { token } = await this.groupsService.inviteMember(groupId, null);
 
     const uri = `${window.location.origin}/invite/${token}`;
-    
+
     navigator.clipboard.writeText(uri).then(() => {
       this.linkCopied.set(true);
 

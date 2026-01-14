@@ -1,12 +1,12 @@
-import { Component, forwardRef, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, forwardRef, input } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 
 @Component({
   selector: 'app-form-input',
-  standalone: true,
   imports: [],
   templateUrl: './form-input.html',
   styleUrl: './form-input.css',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   providers: [{
     provide: NG_VALUE_ACCESSOR,
     useExisting: forwardRef(() => FormInput),
@@ -26,23 +26,24 @@ export class FormInput implements ControlValueAccessor {
   inputClass = input('');
 
   value = '';
-  onChange: any = () => { };
-  onTouched: any = () => { };
+  onChange: (value: string) => void = () => { };
+  onTouched: () => void = () => { };
 
-  writeValue(value: any): void {
+  writeValue(value: string): void {
     this.value = value || '';
   }
 
-  registerOnChange(fn: any): void {
+  registerOnChange(fn: (value: string) => void): void {
     this.onChange = fn;
   }
 
-  registerOnTouched(fn: any): void {
+  registerOnTouched(fn: () => void): void {
     this.onTouched = fn;
   }
 
-  onInput(event: any): void {
-    this.value = event.target.value;
+  onInput(event: Event): void {
+    const target = event.target as HTMLInputElement;
+    this.value = target.value;
     this.onChange(this.value);
   }
 }

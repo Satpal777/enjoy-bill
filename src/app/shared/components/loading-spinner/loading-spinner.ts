@@ -1,11 +1,11 @@
-import { Component, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 
 @Component({
   selector: 'app-loading-spinner',
   imports: [],
   templateUrl: './loading-spinner.html',
-  standalone:true,
   styleUrl: './loading-spinner.css',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class LoadingSpinner {
   fullHeight = input<boolean>(false);

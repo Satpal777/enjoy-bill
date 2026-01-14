@@ -1,5 +1,5 @@
 // invitation-page.component.ts
-import { Component, OnInit, signal, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, signal, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Groups } from '../core/services/supabase/groups';
@@ -7,9 +7,9 @@ import { Supabase } from '../core/services/supabase';
 
 @Component({
   selector: 'app-invitation-page',
-  standalone: true,
   imports: [CommonModule],
   templateUrl: './invite-handler.html',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class InviteHandler implements OnInit {
   private route = inject(ActivatedRoute);
@@ -48,7 +48,7 @@ export class InviteHandler implements OnInit {
    */
   async validateInvitation(inviteCode: string) {
     try {
-      const email = (await this.supabase.getUser()).data.user?.email;
+      const email = this.supabase.getCurrentUser()?.email;
       if (!email) return this.handleInvalidInvite("Invalid Session");
 
       const result = await this.groupsService.validateInvitation(inviteCode);
@@ -59,9 +59,10 @@ export class InviteHandler implements OnInit {
       } else {
         this.handleInvalidInvite(result.message || 'This invitation is no longer valid.');
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Validation error:', error);
-      this.handleInvalidInvite(error.message || 'Failed to validate invitation.');
+      const message = error instanceof Error ? error.message : 'Failed to validate invitation.';
+      this.handleInvalidInvite(message);
     } finally {
       this.isValidating.set(false);
     }
@@ -89,9 +90,10 @@ export class InviteHandler implements OnInit {
 
       // Navigate to the group page after successful acceptance
       this.router.navigate(['/expenses', group_id]);
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Accept error:', error);
-      this.errorMessage.set(error.message || 'Failed to accept invitation.');
+      const message = error instanceof Error ? error.message : 'Failed to accept invitation.';
+      this.errorMessage.set(message);
       this.inviteValid.set(false);
     } finally {
       this.isAccepting.set(false);

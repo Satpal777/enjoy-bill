@@ -1,9 +1,10 @@
-import { Component, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 export interface MemberStatData {
   id: string;
   name: string;
+  avatar?: string;
   initials: string;
   balanceAmount: number;
 }
@@ -13,7 +14,7 @@ export interface MemberStatData {
   imports: [CommonModule],
   templateUrl: './member-list.html',
   styleUrl: './member-list.css',
-  standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class MemberList {
   member = input.required<MemberStatData>();

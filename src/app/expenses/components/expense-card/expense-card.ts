@@ -1,4 +1,4 @@
-import { Component, input, output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 export interface ExpenseCardData {
@@ -10,14 +10,15 @@ export interface ExpenseCardData {
   paidBy: string;
   isLent: boolean;
   myShare: number;
+  isSettlement: boolean;
 }
 
 @Component({
   selector: 'app-expense-card',
-  standalone: true,
   imports: [CommonModule],
   templateUrl: './expense-card.html',
   styleUrl: './expense-card.css',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ExpenseCard {
   expense = input.required<ExpenseCardData>();

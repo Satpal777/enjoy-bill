@@ -1,38 +1,11 @@
 <!-- dashboard/dashboard.refactored.html -->
-<div class="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 text-white font-sans selection:bg-teal-500/30 relative overflow-hidden">
-
-    <!-- Background Effects -->
-    <div class="fixed inset-0 overflow-hidden pointer-events-none">
-        <div class="absolute top-1/4 -left-48 w-96 h-96 bg-teal-500/10 rounded-full blur-3xl animate-pulse"></div>
-        <div class="absolute bottom-1/4 -right-48 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl animate-pulse"
-            style="animation-delay: 1s;"></div>
-    </div>
+<div
+    class="min-h-screen bg-linear-to-br from-slate-950 via-slate-900 to-slate-950 text-white font-sans selection:bg-teal-500/30 relative overflow-hidden">
 
     <!-- Navigation -->
-    <app-navigation title="Enjoy Bill" subtitle="Dashboard" [notificationCount]="invitations().length"
-        (toggleNotifications)="showNotifications.set(!showNotifications())"
-        (toggleProfile)="showProfilePopUp.set(!showProfilePopUp())">
+    <app-navigation title="Enjoy Bill" subtitle="Dashboard"></app-navigation>
 
-        @if (showNotifications()) {
-        <!-- Notification Dropdown -->
-        <app-notification-dropdown selec class="absolute right-0 top-full mt-3 w-80 bg-slate-900 border border-slate-700 rounded-xl 
-                shadow-2xl overflow-hidden z-50 animate-in fade-in slide-in-from-top-2 origin-top-right 
-                ring-1 ring-black/50" [invitations]="invitations()" (close)="showNotifications.set(false)"
-            (respond)="handleInviteResponse($event)">
-        </app-notification-dropdown>
-        }
-
-        @if (showProfilePopUp()) {
-        <!-- Profile Dropdown -->
-        <app-profile-dropdown class="absolute right-0 top-full mt-3 w-30 bg-slate-900 border border-slate-700 rounded-xl 
-                    shadow-2xl overflow-hidden z-50 animate-in fade-in slide-in-from-top-2 origin-top-right 
-                    ring-1 ring-black/50" (close)="showProfilePopUp.set(false)" (logout)="logout()">
-        </app-profile-dropdown>
-        }
-
-    </app-navigation>
-
-    <main class="max-w-7xl mx-auto px-5 sm:px-6 lg:px-8 py-6 sm:py-8 relative">
+    <main class="max-w-7xl mx-auto px-5 sm:px-6 lg:px-8 py-6 sm:py-8 pb-16 relative">
 
         <!-- Page Header -->
         <div class="flex flex-col gap-5 mb-6 sm:flex-row sm:justify-between sm:items-end sm:gap-6 sm:mb-8">
@@ -41,7 +14,8 @@
                 <p class="text-slate-400 text-lg sm:text-base">Overview of your groups and expenses.</p>
             </div>
 
-            <button (click)="showCreateModal.set(true)" class="cursor-pointer bg-gradient-to-r from-teal-600 to-teal-500 hover:from-teal-500 
+            <button (click)="showCreateModal.set(true)"
+                class="cursor-pointer bg-gradient-to-r from-teal-600 to-teal-500 hover:from-teal-500 
                      hover:to-teal-400 text-white px-8 py-4 sm:px-6 sm:py-3 rounded-xl font-bold text-lg sm:text-base shadow-lg shadow-teal-900/20 
                      transition-all duration-300 hover:-translate-y-1 active:scale-95 group overflow-hidden w-full sm:w-auto">
                 <div class="absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0 -translate-x-full 
@@ -110,18 +84,41 @@
                     <div class="flex justify-between items-start mb-5">
                         <div class="h-16 w-16 sm:h-14 sm:w-14 bg-gradient-to-br from-teal-500 to-cyan-600 rounded-xl flex items-center 
                             justify-center text-white font-bold text-2xl sm:text-xl shadow-lg shadow-teal-900/30 
-                            group-hover:scale-110 group-hover:rotate-3 transition-all duration-300">
+                            group-hover:scale-110 group-hover:rotate-3 transition-all duration-300 overflow-hidden">
+                            @if (group.icon_url) {
+                            @if (group.icon_url.startsWith('http')) {
+                            <img [src]="group.icon_url" alt="Group icon" class="w-full h-full object-cover">
+                            } @else {
+                            <span class="text-3xl">{{ group.icon_url }}</span>
+                            }
+                            } @else {
                             {{ group.name.charAt(0).toUpperCase() }}
+                            }
                         </div>
-                        <span class="hidden sm:block text-[10px] font-bold text-slate-500 bg-slate-900/60 px-2 py-1 rounded-lg border 
-                             border-slate-700/50 uppercase tracking-wide">
-                            {{ group.created_at | date:'MMM yyyy' }}
-                        </span>
+
+                        <div class="flex items-center gap-2">
+                            <span class="hidden sm:block text-[10px] font-bold text-slate-500 bg-slate-900/60 px-2 py-1 rounded-lg border 
+                                 border-slate-700/50 uppercase tracking-wide">
+                                {{ group.created_at | date:'MMM yyyy' }}
+                            </span>
+
+                            <!-- Delete Button -->
+                            <button (click)="confirmDelete(group.id, $event)"
+                                class="opacity-0 group-hover:opacity-100 p-2 hover:bg-red-500/20 rounded-lg transition-all cursor-pointer"
+                                title="Delete group">
+                                <svg class="w-4 h-4 text-red-400 hover:text-red-300" fill="none" stroke="currentColor"
+                                    viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                </svg>
+                            </button>
+                        </div>
                     </div>
 
                     <!-- Content -->
                     <div class="flex-1">
-                        <h3 class="text-2xl sm:text-xl font-bold text-white mb-2 group-hover:text-teal-400 transition-colors">
+                        <h3
+                            class="text-2xl sm:text-xl font-bold text-white mb-2 group-hover:text-teal-400 transition-colors">
                             {{ group.name }}
                         </h3>
                         <p class="text-base sm:text-sm text-slate-400 line-clamp-2 leading-relaxed mb-4 sm:mb-0">
@@ -130,8 +127,10 @@
                     </div>
 
                     <!-- Footer Stats -->
-                    <div class="mt-5 pt-5 border-t border-slate-700/50 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between sm:gap-0">
-                        <div class="flex items-center justify-between sm:justify-start gap-6 text-base sm:text-sm font-medium text-slate-400">
+                    <div
+                        class="mt-5 pt-5 border-t border-slate-700/50 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between sm:gap-0">
+                        <div
+                            class="flex items-center justify-between sm:justify-start gap-6 text-base sm:text-sm font-medium text-slate-400">
                             <span class="flex items-center gap-2">
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
                                     stroke="currentColor" class="w-5 h-5 sm:w-4 sm:h-4">
@@ -144,14 +143,15 @@
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
                                     stroke="currentColor" class="w-5 h-5 sm:w-4 sm:h-4">
                                     <path stroke-linecap="round" stroke-linejoin="round"
-                                        d="M12 6v12m-3-2.818l.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                        d="M16.5 6v.75m0 3v.75m0 3v.75m0 3V18m-9-5.25h5.25M7.5 15h3M3.375 5.25c-.621 0-1.125.504-1.125 1.125v3.026a2.999 2.999 0 010 5.198v3.026c0 .621.504 1.125 1.125 1.125h17.25c.621 0 1.125-.504 1.125-1.125v-3.026a2.999 2.999 0 010-5.198V6.375c0-.621-.504-1.125-1.125-1.125H3.375z" />
                                 </svg>
-                                <span class="sm:hidden">0 Expenses</span>
-                                <span class="hidden sm:inline">0</span>
+                                <span class="sm:hidden">{{ group.expense_count || 0 }} Expenses</span>
+                                <span class="hidden sm:inline">{{ group.expense_count || 0 }}</span>
                             </span>
                         </div>
 
-                        <div class="flex items-center justify-center gap-2 text-teal-400 font-semibold text-base sm:text-sm group-hover:gap-3 transition-all">
+                        <div
+                            class="flex items-center justify-center gap-2 text-teal-400 font-semibold text-base sm:text-sm group-hover:gap-3 transition-all">
                             <span>View Details</span>
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5"
                                 stroke="currentColor" class="w-4 h-4">
@@ -189,8 +189,90 @@
         </svg>
 
         <div modal-content class="space-y-6">
+            <!-- Group Icon -->
             <div>
-                <label class="block text-sm sm:text-xs font-bold uppercase tracking-wide text-slate-400 mb-3 sm:mb-2">Group Name</label>
+                <label class="block text-sm sm:text-xs font-bold uppercase tracking-wide text-slate-400 mb-3 sm:mb-2">
+                    Group Icon <span
+                        class="text-xs sm:text-[10px] text-slate-500 font-normal ml-1 normal-case">(Optional)</span>
+                </label>
+
+                <!-- Icon Preview & Selector -->
+                <div class="flex items-center gap-4">
+                    <!-- Current Icon Preview -->
+                    <div (click)="showIconSelector.set(!showIconSelector())"
+                        class="h-16 w-16 bg-gradient-to-br from-teal-500 to-cyan-600 rounded-xl flex items-center justify-center cursor-pointer hover:scale-105 transition-transform shadow-lg">
+                        @if (selectedIcon()) {
+                        @if (selectedIcon()!.startsWith('http')) {
+                        <img [src]="selectedIcon()!" alt="Icon" class="w-full h-full object-cover rounded-xl">
+                        } @else {
+                        <span class="text-3xl">{{ selectedIcon() }}</span>
+                        }
+                        } @else {
+                        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                        </svg>
+                        }
+                    </div>
+
+                    <div class="flex-1">
+                        <p class="text-sm text-slate-300 mb-1">Click to select or upload an icon</p>
+                        <p class="text-xs text-slate-500">Choose from emojis or upload custom image</p>
+                    </div>
+                </div>
+
+                <!-- Icon Selector Dropdown -->
+                @if (showIconSelector()) {
+                <div class="mt-4 bg-slate-900/70 border border-slate-600/50 rounded-xl p-4">
+                    <!-- Predefined Icons Grid -->
+                    <div class="mb-4">
+                        <p class="text-xs font-bold text-slate-400 mb-2">CHOOSE EMOJI</p>
+                        <div class="grid grid-cols-10 gap-2">
+                            @for (icon of predefinedIcons(); track icon) {
+                            <button type="button" (click)="selectIcon(icon)"
+                                class="h-10 w-10 flex items-center justify-center text-2xl hover:bg-slate-800 rounded-lg transition-colors cursor-pointer"
+                                [class.bg-teal-500/20]="selectedIcon() === icon">
+                                {{ icon }}
+                            </button>
+                            }
+                        </div>
+                    </div>
+
+                    <!-- Upload Custom Icon -->
+                    <div class="pt-4 border-t border-slate-700/50">
+                        <p class="text-xs font-bold text-slate-400 mb-2">OR UPLOAD CUSTOM</p>
+                        <label class="block cursor-pointer">
+                            <input type="file" accept="image/*" (change)="onIconUpload($event)" class="hidden">
+                            <div
+                                class="flex items-center justify-center gap-2 px-4 py-2 bg-slate-800 hover:bg-slate-700 rounded-lg transition-colors">
+                                @if (uploadingIcon()) {
+                                <svg class="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg"
+                                    fill="none" viewBox="0 0 24 24">
+                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
+                                        stroke-width="4"></circle>
+                                    <path class="opacity-75" fill="currentColor"
+                                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                                    </path>
+                                </svg>
+                                <span class="text-sm text-white">Uploading...</span>
+                                } @else {
+                                <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor"
+                                    viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                </svg>
+                                <span class="text-sm text-white">Upload Image</span>
+                                }
+                            </div>
+                        </label>
+                    </div>
+                </div>
+                }
+            </div>
+
+            <div>
+                <label
+                    class="block text-sm sm:text-xs font-bold uppercase tracking-wide text-slate-400 mb-3 sm:mb-2">Group
+                    Name</label>
                 <input [(ngModel)]="newGroupName" type="text" placeholder="e.g. Apartment 404" class="w-full bg-slate-900/70 border border-slate-600/50 rounded-xl px-5 py-4 text-white text-lg sm:text-base
                       placeholder-slate-500 focus:ring-2 focus:ring-teal-500 focus:border-teal-500 outline-none 
                       transition-all duration-200 backdrop-blur-sm hover:border-slate-500/50" autofocus>
@@ -198,7 +280,8 @@
 
             <div>
                 <label class="block text-sm sm:text-xs font-bold uppercase tracking-wide text-slate-400 mb-3 sm:mb-2">
-                    Description <span class="text-xs sm:text-[10px] text-slate-500 font-normal ml-1 normal-case">(Optional)</span>
+                    Description <span
+                        class="text-xs sm:text-[10px] text-slate-500 font-normal ml-1 normal-case">(Optional)</span>
                 </label>
                 <textarea [(ngModel)]="newGroupDesc" rows="4" placeholder="What is this group for?"
                     class="w-full bg-slate-900/70 border border-slate-600/50 rounded-xl px-5 py-4 text-white text-lg sm:text-base
@@ -213,7 +296,8 @@
                 Cancel
             </button>
 
-            <button (click)="createGroup()" [disabled]="!newGroupName() || isCreating()" class="relative px-8 py-4 sm:py-2.5 bg-gradient-to-r from-teal-600 to-teal-500 hover:from-teal-500 
+            <button (click)="createGroup()" [disabled]="!newGroupName() || isCreating()"
+                class="relative px-8 py-4 sm:py-2.5 bg-gradient-to-r from-teal-600 to-teal-500 hover:from-teal-500 
                      hover:to-teal-400 text-white rounded-xl font-bold text-lg sm:text-base shadow-xl shadow-teal-900/20 transition-all 
                      duration-300 active:scale-95 disabled:from-slate-800 disabled:to-slate-800 disabled:text-slate-500 
                      disabled:shadow-none disabled:cursor-not-allowed flex items-center justify-center gap-2 overflow-hidden group">
@@ -221,8 +305,8 @@
                     group-hover:translate-x-full transition-transform duration-700"></div>
 
                 @if (isCreating()) {
-                <svg class="animate-spin h-6 w-6 sm:h-5 sm:w-5 text-white relative z-10" xmlns="http://www.w3.org/2000/svg"
-                    fill="none" viewBox="0 0 24 24">
+                <svg class="animate-spin h-6 w-6 sm:h-5 sm:w-5 text-white relative z-10"
+                    xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                     <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                     <path class="opacity-75" fill="currentColor"
                         d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
@@ -235,4 +319,54 @@
             </button>
         </div>
     </app-modal>
+
+    <!-- Delete Confirmation Modal -->
+    @if (groupToDelete()) {
+    <app-modal [isOpen]="true" title="Delete Group" (close)="cancelDelete()">
+        <svg modal-icon xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+            stroke="currentColor" class="w-6 h-6 sm:w-5 sm:h-5 text-red-400">
+            <path stroke-linecap="round" stroke-linejoin="round"
+                d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
+        </svg>
+
+        <div modal-content class="space-y-4">
+            <div class="bg-red-500/10 border border-red-500/30 rounded-xl p-4">
+                <p class="text-white font-semibold mb-2">⚠️ Warning</p>
+                <p class="text-sm text-slate-300">
+                    This will permanently delete the group and all associated expenses, settlements, and invitations.
+                    This action cannot be undone.
+                </p>
+            </div>
+
+            <p class="text-slate-400 text-sm">
+                Are you sure you want to delete <span class="text-white font-semibold">{{ groupToDeleteName() }}</span>?
+            </p>
+        </div>
+
+        <div modal-footer class="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
+            <button (click)="cancelDelete()"
+                class="px-6 py-3 sm:px-5 sm:py-2.5 text-slate-400 hover:text-white font-semibold transition-colors cursor-pointer text-base border border-slate-700 sm:border-0 rounded-xl sm:rounded-none">
+                Cancel
+            </button>
+
+            <button (click)="deleteGroup()" [disabled]="isDeleting()"
+                class="relative px-8 py-4 sm:py-2.5 bg-red-600 hover:bg-red-500 text-white rounded-xl font-bold text-lg sm:text-base shadow-xl shadow-red-900/20 transition-all 
+                         duration-300 active:scale-95 disabled:bg-slate-800 disabled:text-slate-500 
+                         disabled:shadow-none disabled:cursor-not-allowed flex items-center justify-center gap-2 cursor-pointer">
+                @if (isDeleting()) {
+                <svg class="animate-spin h-6 w-6 sm:h-5 sm:w-5 text-white" xmlns="http://www.w3.org/2000/svg"
+                    fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor"
+                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                    </path>
+                </svg>
+                <span>Deleting...</span>
+                } @else {
+                <span>Delete Group</span>
+                }
+            </button>
+        </div>
+    </app-modal>
+    }
 </div>

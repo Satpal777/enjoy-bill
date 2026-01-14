@@ -1,13 +1,6 @@
 <!-- expenses/expenses.refactored.html -->
-<div class="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 text-white font-sans 
+<div class="min-h-screen bg-linear-to-br from-slate-950 via-slate-900 to-slate-950 text-white font-sans 
             selection:bg-teal-500/30 relative overflow-hidden">
-
-    <!-- Background Effects -->
-    <div class="fixed inset-0 overflow-hidden pointer-events-none">
-        <div class="absolute top-1/4 -left-48 w-96 h-96 bg-teal-500/10 rounded-full blur-3xl animate-pulse"></div>
-        <div class="absolute bottom-1/4 -right-48 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl animate-pulse"
-            style="animation-delay: 1s;"></div>
-    </div>
 
     <!-- Navigation -->
     <app-navigation [title]="'Back to Dashboard'" [badge]="selectedGroup()?.name || 'Loading...'"
@@ -38,7 +31,7 @@
 
             <!-- Action Buttons -->
             <div class="flex gap-3">
-                <button class="px-5 py-2.5 rounded-xl border border-slate-700/50 text-slate-300 font-semibold text-sm 
+                <button (click)="openSettleUpModal()" class="px-5 py-2.5 rounded-xl border border-slate-700/50 text-slate-300 font-semibold text-sm 
                        hover:bg-slate-800/50 hover:text-white transition-all active:scale-95 cursor-pointer">
                     Settle Up
                 </button>
@@ -180,7 +173,7 @@
                                         {{ invite.invitee_email }}
                                     </p>
                                     <p class="text-xs text-slate-500 truncate">
-                                        Invited by: <span class="text-slate-400">{{ invite.inviter?.display_name ||
+                                        Invited by: <span class="text-slate-400">{{ invite.inviter?.username ||
                                             'Unknown' }}</span>
                                     </p>
                                 </div>
@@ -511,6 +504,10 @@
     </app-expense-details>
     }
 
-
+    <!-- Settle Up Modal -->
+    <app-settle-up-modal [isOpen]="showSettleUpModal()" [groupId]="selectedGroup()?.id || ''" [members]="members()"
+        [balances]="balances()" [currentUserId]="userId()?.id || ''" (close)="showSettleUpModal.set(false)"
+        (settle)="handleSettlement($event)">
+    </app-settle-up-modal>
 
 </div>

@@ -2,7 +2,11 @@
     <div class="flex items-center gap-3">
         <div class="h-8 w-8 bg-gradient-to-br from-slate-700 to-slate-800 rounded-full border 
                     border-slate-600 flex items-center justify-center text-slate-300 font-bold text-xs shadow-sm">
+            @if (member().avatar) {
+            <img [src]="member().avatar" class="h-8 w-8 rounded-full" />
+            } @else {
             {{ member().initials }}
+            }
         </div>
 
         <div>

@@ -4,9 +4,11 @@ import { Signup } from './auth/signup/signup';
 import { authGuard } from './core/guards/auth-guard';
 import { DashboardLayout } from './dashboard/layout/layout';
 import { ExpenseLayout } from './expenses/layout/layout';
+import { HomeLayout } from './home/home-layout/home-layout';
 
 export const routes: Routes = [
-    { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
+    { path: '', redirectTo: 'home', pathMatch: 'full' },
+    { path: 'home', component: HomeLayout },
     { path: 'login', component: Login },
     { path: 'signup', component: Signup },
     { path: 'dashboard', component: DashboardLayout, canActivate: [authGuard] },
@@ -14,6 +16,7 @@ export const routes: Routes = [
     {
         path: 'invite/:code',
         loadComponent: () => import('./invite-handler/invite-handler')
-            .then(m => m.InviteHandler)
+            .then(m => m.InviteHandler),
+        canActivate: [authGuard]
     },
 ];

@@ -1,192 +1,218 @@
-<div class="min-h-screen bg-slate-900 flex flex-col justify-center py-12 sm:px-6 lg:px-8 overflow-hidden relative">
+<div class="min-h-screen bg-slate-900 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
 
-  <div class="absolute top-0 left-0 w-full h-full overflow-hidden z-0 pointer-events-none">
-    <div class="absolute -top-20 -left-20 w-72 h-72 bg-teal-500/10 rounded-full blur-3xl opacity-50 animate-pulse">
+  <div class="sm:mx-auto sm:w-full sm:max-w-md mb-6">
+    <div
+      class="mx-auto h-12 w-12 bg-slate-800 border border-slate-700 rounded-xl flex items-center justify-center text-teal-400 shadow-lg">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
+        class="w-7 h-7">
+        <path stroke-linecap="round" stroke-linejoin="round"
+          d="M2.25 18.75a60.07 60.07 0 0115.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 013 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 00-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 01-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 003 15h-.75M15 10.5a3 3 0 11-6 0 3 3 0 016 0zm3 0h.008v.008H18V10.5zm-12 0h.008v.008H6V10.5z" />
+      </svg>
     </div>
-    <div class="absolute top-40 right-10 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl opacity-30"></div>
+
+    <h2 class="mt-6 text-center text-3xl font-bold text-white tracking-tight">
+      Create Your Account
+    </h2>
+    <p class="mt-2 text-center text-sm text-slate-400">
+      Join Enjoy Bill to start tracking and splitting expenses
+    </p>
   </div>
 
-  <div class="relative z-10 animate-fade-in-up">
+  <div class="sm:mx-auto sm:w-full sm:max-w-md">
+    <div class="bg-slate-800 py-8 px-4 shadow-2xl sm:rounded-xl sm:px-10 border border-slate-700/50">
 
-    <div class="sm:mx-auto sm:w-full sm:max-w-md mb-6">
-      <div
-        class="mx-auto h-12 w-12 bg-slate-800 border border-slate-700 rounded-xl flex items-center justify-center text-teal-400 shadow-lg animate-float">
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"
-          class="w-6 h-6">
-          <path stroke-linecap="round" stroke-linejoin="round"
-            d="M19 7.5v3m0 0v3m0-3h3m-3 0h-3m-2.25-4.125a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zM4 19.235v-.11a6.375 6.375 0 0112.75 0v.109A12.318 12.318 0 0110.374 21c-2.331 0-4.512-.645-6.374-1.766z" />
-        </svg>
-      </div>
+      <form [formGroup]="signupForm" (ngSubmit)="onSubmit()" class="space-y-6">
 
-      <h1 class="mt-4 text-center text-3xl font-extrabold text-teal-400 tracking-tight animate-fade-in-up">
-        EnjoyBill
-      </h1>
-
-      <h2 class="mt-2 text-center text-sm text-slate-400 font-medium animate-fade-in-up" style="animation-delay: 0.1s;">
-        Create your account to start splitting
-      </h2>
-    </div>
-
-    <div class="sm:mx-auto sm:w-full sm:max-w-md">
-      <div class="bg-slate-800 py-8 px-4 shadow-2xl sm:rounded-xl sm:px-10 border border-slate-700/50 backdrop-blur-sm">
-
-        <form [formGroup]="signupForm" (ngSubmit)="onSubmit()" class="space-y-5">
-
-          <div class="group">
-            <label for="displayName"
-              class="block text-sm font-medium text-slate-300 transition-colors group-focus-within:text-teal-400">
-              Display Name
-            </label>
-            <div class="mt-1 relative">
-              <input id="displayName" type="text" formControlName="displayName" placeholder="John Doe"
-                [class.border-red-500]="displayName?.invalid && displayName?.touched"
-                [class.animate-shake]="displayName?.invalid && displayName?.touched"
-                class="appearance-none block w-full px-3 py-2.5 bg-slate-900 border border-slate-600 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500 sm:text-sm transition-all duration-300 ease-in-out" />
-            </div>
+        <div>
+          <label for="displayName" class="block text-sm font-medium text-slate-300">
+            Display Name
+          </label>
+          <div class="mt-1 relative">
+            <input id="displayName" type="text" formControlName="displayName" placeholder="John Doe"
+              [class.border-red-500]="displayName?.invalid && displayName?.touched"
+              [class.focus:border-red-500]="displayName?.invalid && displayName?.touched"
+              [class.focus:ring-red-500]="displayName?.invalid && displayName?.touched"
+              class="appearance-none block w-full px-3 py-2 bg-slate-900 border border-slate-600 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500 sm:text-sm transition duration-150 ease-in-out" />
 
             @if (displayName?.invalid && displayName?.touched) {
-            <div class="mt-1 text-xs text-red-400 animate-fade-in-up" style="animation-duration: 0.3s">
-              @if (displayName?.errors?.['required']) { <span>Display name is required</span> }
-              @if (displayName?.errors?.['minlength']) { <span>Name must be at least 2 characters</span> }
+            <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+              <svg class="h-5 w-5 text-red-500" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd"
+                  d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+                  clip-rule="evenodd" />
+              </svg>
             </div>
             }
           </div>
 
-          <div class="group">
-            <label for="email"
-              class="block text-sm font-medium text-slate-300 transition-colors group-focus-within:text-teal-400">
-              Email
-            </label>
-            <div class="mt-1 relative">
-              <input id="email" type="email" formControlName="email" placeholder="you@example.com"
-                [class.border-red-500]="email?.invalid && email?.touched"
-                [class.animate-shake]="email?.invalid && email?.touched"
-                class="appearance-none block w-full px-3 py-2.5 bg-slate-900 border border-slate-600 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500 sm:text-sm transition-all duration-300 ease-in-out" />
-            </div>
+          @if (displayName?.invalid && displayName?.touched) {
+          <div class="mt-2 text-sm text-red-400">
+            @if (displayName?.errors?.['required']) {
+            <span>Display name is required</span>
+            }
+            @if (displayName?.errors?.['minlength']) {
+            <span>Name must be at least 2 characters</span>
+            }
+          </div>
+          }
+        </div>
+
+        <div>
+          <label for="email" class="block text-sm font-medium text-slate-300">
+            Email address
+          </label>
+          <div class="mt-1 relative">
+            <input id="email" type="email" formControlName="email" placeholder="you@example.com"
+              [class.border-red-500]="email?.invalid && email?.touched"
+              [class.focus:border-red-500]="email?.invalid && email?.touched"
+              [class.focus:ring-red-500]="email?.invalid && email?.touched"
+              class="appearance-none block w-full px-3 py-2 bg-slate-900 border border-slate-600 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500 sm:text-sm transition duration-150 ease-in-out" />
 
             @if (email?.invalid && email?.touched) {
-            <div class="mt-1 text-xs text-red-400 animate-fade-in-up" style="animation-duration: 0.3s">
-              @if (email?.errors?.['required']) { <span>Email is required</span> }
-              @if (email?.errors?.['email']) { <span>Please enter a valid email</span> }
-            </div>
-            }
-          </div>
-
-          <div class="group">
-            <label for="password"
-              class="block text-sm font-medium text-slate-300 transition-colors group-focus-within:text-teal-400">
-              Password
-            </label>
-            <div class="mt-1 relative">
-              <input id="password" type="password" formControlName="password" placeholder="••••••••"
-                [class.border-red-500]="password?.invalid && password?.touched"
-                [class.animate-shake]="password?.invalid && password?.touched"
-                class="appearance-none block w-full px-3 py-2.5 bg-slate-900 border border-slate-600 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500 sm:text-sm transition-all duration-300 ease-in-out" />
-            </div>
-
-            @if (password?.invalid && password?.touched) {
-            <div class="mt-1 text-xs text-red-400 animate-fade-in-up" style="animation-duration: 0.3s">
-              @if (password?.errors?.['required']) { <span>Password is required</span> }
-              @if (password?.errors?.['minlength']) { <span>Password must be at least 6 characters</span> }
-            </div>
-            }
-          </div>
-
-          <div class="group">
-            <label for="confirmPassword"
-              class="block text-sm font-medium text-slate-300 transition-colors group-focus-within:text-teal-400">
-              Confirm Password
-            </label>
-            <div class="mt-1 relative">
-              <input id="confirmPassword" type="password" formControlName="confirmPassword" placeholder="••••••••"
-                [class.border-red-500]="confirmPassword?.invalid && confirmPassword?.touched"
-                [class.animate-shake]="confirmPassword?.invalid && confirmPassword?.touched"
-                class="appearance-none block w-full px-3 py-2.5 bg-slate-900 border border-slate-600 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500 sm:text-sm transition-all duration-300 ease-in-out" />
-            </div>
-
-            @if (confirmPassword?.invalid && confirmPassword?.touched) {
-            <div class="mt-1 text-xs text-red-400 animate-fade-in-up" style="animation-duration: 0.3s">
-              @if (confirmPassword?.errors?.['required']) { <span>Please confirm your password</span> }
-              @if (confirmPassword?.errors?.['passwordMismatch']) { <span>Passwords do not match</span> }
-            </div>
-            }
-          </div>
-
-          @if (successMessage) {
-          <div class="rounded-md bg-teal-900/30 p-3 border border-teal-800 animate-fade-in-up">
-            <div class="flex">
-              <div class="flex-shrink-0">
-                <svg class="h-5 w-5 text-teal-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
-                  fill="currentColor">
-                  <path fill-rule="evenodd"
-                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                    clip-rule="evenodd" />
-                </svg>
-              </div>
-              <div class="ml-3">
-                <h3 class="text-sm font-medium text-teal-300">{{ successMessage }}</h3>
-              </div>
-            </div>
-          </div>
-          }
-
-          @if (errorMessage) {
-          <div class="rounded-md bg-red-900/30 p-3 border border-red-800 animate-fade-in-up">
-            <div class="flex">
-              <div class="flex-shrink-0">
-                <svg class="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
-                  <path fill-rule="evenodd"
-                    d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
-                    clip-rule="evenodd" />
-                </svg>
-              </div>
-              <div class="ml-3">
-                <h3 class="text-sm font-medium text-red-300">{{ errorMessage }}</h3>
-              </div>
-            </div>
-          </div>
-          }
-
-          <div class="pt-2">
-            <button type="submit" [disabled]="loading || signupForm.invalid"
-              class="w-full flex justify-center py-2.5 px-4 border border-transparent rounded-lg shadow-lg text-sm font-bold text-white bg-teal-600 hover:bg-teal-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-800 focus:ring-teal-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 ease-in-out transform hover:-translate-y-0.5 active:scale-95 cursor-pointer">
-              @if (loading) {
-              <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none"
-                viewBox="0 0 24 24">
-                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                <path class="opacity-75" fill="currentColor"
-                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
-                </path>
+            <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+              <svg class="h-5 w-5 text-red-500" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd"
+                  d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+                  clip-rule="evenodd" />
               </svg>
-              Creating account...
-              } @else {
-              Create Account
-              }
-            </button>
-          </div>
-        </form>
-
-        <div class="mt-6">
-          <div class="relative">
-            <div class="absolute inset-0 flex items-center">
-              <div class="w-full border-t border-slate-700"></div>
             </div>
-            <div class="relative flex justify-center text-sm">
-              <span class="px-2 bg-slate-800 text-slate-400">
-                Already have an account?
-              </span>
-            </div>
+            }
           </div>
 
-          <div class="mt-4 text-center">
-            <a routerLink="/login"
-              class="font-medium text-teal-400 hover:text-teal-300 transition-colors duration-150 hover:underline cursor-pointer">
-              Sign in
-            </a>
+          @if (email?.invalid && email?.touched) {
+          <div class="mt-2 text-sm text-red-400">
+            @if (email?.errors?.['required']) {
+            <span>Email is required</span>
+            }
+            @if (email?.errors?.['email']) {
+            <span>Please enter a valid email address</span>
+            }
+          </div>
+          }
+        </div>
+
+        <div>
+          <label for="password" class="block text-sm font-medium text-slate-300">
+            Password
+          </label>
+          <div class="mt-1 relative">
+            <input id="password" type="password" formControlName="password" placeholder="••••••••"
+              [class.border-red-500]="password?.invalid && password?.touched"
+              [class.focus:border-red-500]="password?.invalid && password?.touched"
+              [class.focus:ring-red-500]="password?.invalid && password?.touched"
+              class="appearance-none block w-full px-3 py-2 bg-slate-900 border border-slate-600 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500 sm:text-sm transition duration-150 ease-in-out" />
+          </div>
+
+          @if (password?.invalid && password?.touched) {
+          <div class="mt-2 text-sm text-red-400">
+            @if (password?.errors?.['required']) {
+            <span>Password is required</span>
+            }
+            @if (password?.errors?.['minlength']) {
+            <span>Password must be at least 6 characters</span>
+            }
+          </div>
+          }
+        </div>
+
+        <div>
+          <label for="confirmPassword" class="block text-sm font-medium text-slate-300">
+            Confirm Password
+          </label>
+          <div class="mt-1 relative">
+            <input id="confirmPassword" type="password" formControlName="confirmPassword" placeholder="••••••••"
+              [class.border-red-500]="confirmPassword?.invalid && confirmPassword?.touched"
+              [class.focus:border-red-500]="confirmPassword?.invalid && confirmPassword?.touched"
+              [class.focus:ring-red-500]="confirmPassword?.invalid && confirmPassword?.touched"
+              class="appearance-none block w-full px-3 py-2 bg-slate-900 border border-slate-600 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500 sm:text-sm transition duration-150 ease-in-out" />
+          </div>
+
+          @if (confirmPassword?.invalid && confirmPassword?.touched) {
+          <div class="mt-2 text-sm text-red-400">
+            @if (confirmPassword?.errors?.['required']) {
+            <span>Please confirm your password</span>
+            }
+            @if (confirmPassword?.errors?.['passwordMismatch']) {
+            <span>Passwords do not match</span>
+            }
+          </div>
+          }
+        </div>
+
+        @if (successMessage()) {
+        <div class="rounded-md bg-teal-900/30 p-4 border border-teal-800">
+          <div class="flex">
+            <div class="flex-shrink-0">
+              <svg class="h-5 w-5 text-teal-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
+                fill="currentColor">
+                <path fill-rule="evenodd"
+                  d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                  clip-rule="evenodd" />
+              </svg>
+            </div>
+            <div class="ml-3">
+              <h3 class="text-sm font-medium text-teal-300">{{ successMessage() }}</h3>
+            </div>
+          </div>
+        </div>
+        }
+
+        @if (errorMessage()) {
+        <div class="rounded-md bg-red-900/30 p-4 border border-red-800">
+          <div class="flex">
+            <div class="flex-shrink-0">
+              <svg class="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd"
+                  d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                  clip-rule="evenodd" />
+              </svg>
+            </div>
+            <div class="ml-3">
+              <h3 class="text-sm font-medium text-red-300">{{ errorMessage() }}</h3>
+            </div>
+          </div>
+        </div>
+        }
+
+        <div>
+          <button type="submit" [disabled]="loading() || signupForm.invalid"
+            class="w-full flex justify-center py-2.5 px-4 border border-transparent rounded-lg shadow-lg text-sm font-bold text-white bg-teal-600 hover:bg-teal-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-800 focus:ring-teal-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 ease-in-out transform hover:-translate-y-0.5 cursor-pointer">
+            @if (loading()) {
+            <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none"
+              viewBox="0 0 24 24">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+              <path class="opacity-75" fill="currentColor"
+                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+              </path>
+            </svg>
+            Creating account...
+            } @else {
+            Create Account
+            }
+          </button>
+        </div>
+      </form>
+
+      <div class="mt-8">
+        <div class="relative">
+          <div class="absolute inset-0 flex items-center">
+            <div class="w-full border-t border-slate-700"></div>
+          </div>
+          <div class="relative flex justify-center text-sm">
+            <span class="px-2 bg-slate-800 text-slate-400">
+              Already have an account?
+            </span>
           </div>
         </div>
 
+        <div class="mt-6 text-center">
+          <a routerLink="/login"
+            class="font-medium text-teal-400 hover:text-teal-300 transition-colors duration-150 cursor-pointer">
+            Sign in
+          </a>
+        </div>
       </div>
+
     </div>
   </div>
 </div>

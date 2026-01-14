@@ -1,28 +1,33 @@
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Supabase } from '../../core/services/supabase';
 import { Router, RouterLink, RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-login',
-  imports: [FormsModule,ReactiveFormsModule,RouterLink],
+  imports: [FormsModule, ReactiveFormsModule, RouterLink],
   templateUrl: './login.html',
   styleUrl: './login.css',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class Login {
-  loginForm: FormGroup;
-  loading = false;
-  errorMessage = '';
+  private fb = inject(FormBuilder);
+  private supabaseService = inject(Supabase);
+  private router = inject(Router);
 
-  constructor(
-    private fb: FormBuilder,
-    private supabaseService: Supabase,
-    private router: Router
-  ) {
-    this.loginForm = this.fb.group({
-      email: ['', [Validators.required, Validators.email]],
-      password: ['', [Validators.required, Validators.minLength(6)]]
-    });
+  loginForm: FormGroup = this.fb.group({
+    email: ['', [Validators.required, Validators.email]],
+    password: ['', [Validators.required, Validators.minLength(6)]]
+  });
+
+  loading = signal(false);
+  errorMessage = signal('');
+  isReturningUser = signal(false);
+
+  constructor() {
+    // Check if user has logged in before
+    const hasLoggedInBefore = localStorage.getItem('hasLoggedIn');
+    this.isReturningUser.set(hasLoggedInBefore === 'true');
   }
 
   async onSubmit() {
@@ -30,17 +35,22 @@ export class Login {
       return;
     }
 
-    this.loading = true;
-    this.errorMessage = '';
+    this.loading.set(true);
+    this.errorMessage.set('');
 
     try {
       const { email, password } = this.loginForm.value;
       await this.supabaseService.signIn(email, password);
+
+      // Mark user as having logged in before
+      localStorage.setItem('hasLoggedIn', 'true');
+
       this.router.navigate(['/dashboard']);
-    } catch (error: any) {
-      this.errorMessage = error.message || 'Failed to sign in. Please try again.';
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : 'Failed to sign in. Please try again.';
+      this.errorMessage.set(message);
     } finally {
-      this.loading = false;
+      this.loading.set(false);
     }
   }
 

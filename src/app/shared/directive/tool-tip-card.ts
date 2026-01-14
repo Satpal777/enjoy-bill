@@ -1,34 +1,33 @@
-import { Directive, ElementRef, HostListener, Input, Renderer2, TemplateRef, ViewContainerRef, EmbeddedViewRef } from '@angular/core';
+import { Directive, ElementRef, inject, input, Renderer2, TemplateRef, ViewContainerRef, EmbeddedViewRef } from '@angular/core';
 
 @Directive({
   selector: '[appToolTipCard]',
-  standalone: true
+  host: {
+    '(mouseenter)': 'onMouseEnter()',
+    '(mouseleave)': 'onMouseLeave()'
+  }
 })
 export class ToolTipCard {
-  @Input('appToolTipCard') tooltipTemplate: TemplateRef<any> | null = null;
+  tooltipTemplate = input<TemplateRef<unknown> | null>(null, { alias: 'appToolTipCard' });
+  tooltipContext = input<unknown>();
 
-  @Input() tooltipContext: any;
+  private elementRef = inject(ElementRef);
+  private viewContainerRef = inject(ViewContainerRef);
+  private renderer = inject(Renderer2);
 
-  private viewRef: EmbeddedViewRef<any> | null = null;
+  private viewRef: EmbeddedViewRef<unknown> | null = null;
   private tooltipContainer: HTMLElement | null = null;
+  private hideTimeout: ReturnType<typeof setTimeout> | null = null;
 
-  constructor(
-    private elementRef: ElementRef,
-    private viewContainerRef: ViewContainerRef,
-    private renderer: Renderer2
-  ) { }
-
-  private hideTimeout: any;
-
-  @HostListener('mouseenter') onMouseEnter() {
+  onMouseEnter() {
     this.clearHideTimeout(); // If we come back, stop hiding
     if (!this.tooltipContainer) {
       this.showTooltip();
     }
   }
 
-  @HostListener('mouseleave') onMouseLeave() {
-    // Don't hide immediately! Wait 200ms
+  onMouseLeave() {
+    // Don't hide immediately! Wait 300ms
     this.hideTimeout = setTimeout(() => {
       this.hideTooltip();
     }, 300);
@@ -42,10 +41,13 @@ export class ToolTipCard {
   }
 
   private showTooltip() {
+    const template = this.tooltipTemplate();
+    if (!template) return;
+
     // 1. Create the view
     this.viewRef = this.viewContainerRef.createEmbeddedView(
-      this.tooltipTemplate!,
-      { $implicit: this.tooltipContext }
+      template,
+      { $implicit: this.tooltipContext() }
     );
 
     this.tooltipContainer = this.renderer.createElement('div');
