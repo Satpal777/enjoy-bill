@@ -42,9 +42,10 @@ export class Supabase {
       email,
       password,
       options: {
+        emailRedirectTo: import.meta.env['NG_APP_BASE_DASHBOARD_URL'],
         data: {
           display_name: displayName || email.split('@')[0]
-        }
+        },
       }
     });
 
