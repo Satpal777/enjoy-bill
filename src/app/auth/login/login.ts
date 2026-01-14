@@ -1,7 +1,7 @@
-import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@angular/core';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Supabase } from '../../core/services/supabase';
-import { Router, RouterLink, RouterModule } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink, RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-login',
@@ -10,10 +10,11 @@ import { Router, RouterLink, RouterModule } from '@angular/router';
   styleUrl: './login.css',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class Login {
+export class Login implements OnInit {
   private fb = inject(FormBuilder);
   private supabaseService = inject(Supabase);
   private router = inject(Router);
+  private route = inject(ActivatedRoute);
 
   loginForm: FormGroup = this.fb.group({
     email: ['', [Validators.required, Validators.email]],
@@ -30,6 +31,24 @@ export class Login {
     this.isReturningUser.set(hasLoggedInBefore === 'true');
   }
 
+  ngOnInit() {
+    const returnUrl = this.route.snapshot.queryParams['returnUrl'];
+    console.log(returnUrl);
+    if (returnUrl && returnUrl.includes('#')) {
+      console.log('returnUrl', returnUrl);
+      const fragmentFromReturnUrl = returnUrl.split('#')[1];
+      console.log('fragmentFromReturnUrl', fragmentFromReturnUrl);
+      this.checkErrorParams(new URLSearchParams(fragmentFromReturnUrl));
+    }
+  }
+
+  private checkErrorParams(params: URLSearchParams) {
+    const errorDescription = params.get('error_description');
+    if (errorDescription) {
+      this.errorMessage.set(errorDescription.replace(/\+/g, ' '));
+    }
+  }
+
   async onSubmit() {
     if (this.loginForm.invalid) {
       return;
@@ -44,7 +63,6 @@ export class Login {
 
       // Mark user as having logged in before
       localStorage.setItem('hasLoggedIn', 'true');
-
       this.router.navigate(['/dashboard']);
     } catch (error: unknown) {
       const message = error instanceof Error ? error.message : 'Failed to sign in. Please try again.';
