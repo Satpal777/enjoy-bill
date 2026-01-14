@@ -56,6 +56,7 @@ Follow these steps to set up the project locally.
     ```env
     NG_APP_SUPABASE_URL=your_supabase_url
     NG_APP_SUPABASE_KEY=your_supabase_anon_key
+    NG_APP_BASE_DASHBOARD_URL=http://localhost:4200/dashboard
     ```
 
 4.  **Run the development server**
