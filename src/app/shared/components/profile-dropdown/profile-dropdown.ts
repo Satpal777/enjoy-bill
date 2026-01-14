@@ -66,7 +66,6 @@ export class ProfileDropdown {
         .storage
         .from('Profile Images')
         .getPublicUrl(filePath);
-      console.log(publicUrl);
 
       // Update profile
       await this.supabase.updateProfile(userId, { avatar_url: publicUrl });
