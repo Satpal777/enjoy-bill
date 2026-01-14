@@ -22,6 +22,13 @@ export class Login {
 
   loading = signal(false);
   errorMessage = signal('');
+  isReturningUser = signal(false);
+
+  constructor() {
+    // Check if user has logged in before
+    const hasLoggedInBefore = localStorage.getItem('hasLoggedIn');
+    this.isReturningUser.set(hasLoggedInBefore === 'true');
+  }
 
   async onSubmit() {
     if (this.loginForm.invalid) {
@@ -34,6 +41,10 @@ export class Login {
     try {
       const { email, password } = this.loginForm.value;
       await this.supabaseService.signIn(email, password);
+
+      // Mark user as having logged in before
+      localStorage.setItem('hasLoggedIn', 'true');
+
       this.router.navigate(['/dashboard']);
     } catch (error: unknown) {
       const message = error instanceof Error ? error.message : 'Failed to sign in. Please try again.';

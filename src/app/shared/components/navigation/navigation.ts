@@ -99,7 +99,7 @@ export class Navigation implements OnInit {
 
   async logout() {
     await this.supabase.signOut();
-    this.router.navigate(['/login']);
+    this.router.navigate(['/home']);
   }
 
   onBackClick() {

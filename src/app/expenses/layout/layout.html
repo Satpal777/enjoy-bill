@@ -1,13 +1,6 @@
 <!-- expenses/expenses.refactored.html -->
-<div class="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 text-white font-sans 
+<div class="min-h-screen bg-linear-to-br from-slate-950 via-slate-900 to-slate-950 text-white font-sans 
             selection:bg-teal-500/30 relative overflow-hidden">
-
-    <!-- Background Effects -->
-    <div class="fixed inset-0 overflow-hidden pointer-events-none">
-        <div class="absolute top-1/4 -left-48 w-96 h-96 bg-teal-500/10 rounded-full blur-3xl animate-pulse"></div>
-        <div class="absolute bottom-1/4 -right-48 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl animate-pulse"
-            style="animation-delay: 1s;"></div>
-    </div>
 
     <!-- Navigation -->
     <app-navigation [title]="'Back to Dashboard'" [badge]="selectedGroup()?.name || 'Loading...'"
